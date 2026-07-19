@@ -1,0 +1,14 @@
+BUSINESS RECOMMENDATIONS DASHBOARD
+============================================================
+
+HIGHEST RISK CUSTOMER SEGMENTS:
+1. Month-to-month contracts with high monthly charges (>$70)
+2. New customers (tenure < 6 months)
+3. Fiber optic internet customers
+4. Electronic check payment method
+
+RECOMMENDED RETENTION STRATEGIES:
+1. Offer annual contract discounts to month-to-month customers
+2. Implement 'welcome' retention program for first 6 months
+3. Bundle high-speed internet with streaming services
+4. Incentivize electronic check customers to switch to auto-pay
