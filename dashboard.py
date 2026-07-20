@@ -882,6 +882,52 @@ elif page == "💡 Insights":
         ]
     })
     st.dataframe(kpi_data, use_container_width=True, hide_index=True)
+    
+    # ============================================
+    # DOWNLOAD REPORT - NEW FEATURE
+    # ============================================
+    st.markdown("---")
+    st.subheader("📥 Download Report")
+    
+    # Create a downloadable report
+    report_text = """
+    BUSINESS RECOMMENDATIONS REPORT
+    ================================
+    
+    HIGHEST RISK CUSTOMER SEGMENTS:
+    1. Month-to-month contracts with high monthly charges (>$70)
+    2. New customers (tenure < 6 months)
+    3. Fiber optic internet customers
+    4. Electronic check payment method
+    
+    RECOMMENDED RETENTION STRATEGIES:
+    1. Offer annual contract discounts to month-to-month customers
+    2. Implement 'welcome' retention program for first 6 months
+    3. Bundle high-speed internet with streaming services
+    4. Incentivize electronic check customers to switch to auto-pay
+    
+    KEY METRICS TO MONITOR:
+    - Monthly churn rate by contract type
+    - Churn rate at tenure milestones
+    - Customer satisfaction scores for high-risk segments
+    - Retention campaign conversion rate
+    
+    MODEL PERFORMANCE:
+    - Best Model: Random Forest (ROC-AUC: 0.841)
+    - Precision (Churn): 0.53
+    - Recall (Churn): 0.77
+    - F1-Score (Churn): 0.63
+    """
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.download_button(
+            label="📥 Download Recommendations (TXT)",
+            data=report_text,
+            file_name="business_recommendations.txt",
+            mime="text/plain",
+            use_container_width=True
+        )
 
 # ============================================
 # FOOTER
