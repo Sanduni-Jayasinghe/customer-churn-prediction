@@ -18,56 +18,195 @@ st.set_page_config(
 )
 
 # ============================================
-# CUSTOM CSS - MODERN PROFESSIONAL DESIGN
+# CUSTOM CSS - PROFESSIONAL DASHBOARD
 # ============================================
 st.markdown("""
 <style>
-    /* ===== GLOBAL STYLES ===== */
-    .main .block-container {
-        padding-top: 1.5rem;
-        padding-bottom: 0rem;
-        max-width: 1400px;
+    /* ===== SIDEBAR STYLING ===== */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0f0c29 0%, #1a1a3e 50%, #24243e 100%);
+        padding: 0;
     }
     
-    /* ===== HEADER ===== */
+    section[data-testid="stSidebar"] .css-1d391kg {
+        padding: 0.5rem 0.8rem;
+    }
+    
+    /* Sidebar Brand */
+    .sidebar-brand {
+        text-align: center;
+        padding: 1.5rem 0 1.2rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        margin-bottom: 1.5rem;
+    }
+    
+    .sidebar-brand .logo {
+        font-size: 2.8rem;
+        display: block;
+    }
+    
+    .sidebar-brand h2 {
+        color: #ffffff;
+        margin: 0.3rem 0 0 0;
+        font-weight: 700;
+        font-size: 1.2rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .sidebar-brand h2 span {
+        background: linear-gradient(90deg, #f7971e, #ffd200);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .sidebar-brand p {
+        color: #6b7280;
+        font-size: 0.7rem;
+        margin: 0.1rem 0 0 0;
+        letter-spacing: 1px;
+    }
+    
+    /* Custom Navigation - HIDE default radio button styling */
+    .stRadio > div {
+        gap: 0.3rem;
+    }
+    
+    .stRadio label {
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.8rem !important;
+        padding: 0.6rem 0.8rem !important;
+        border-radius: 10px !important;
+        background: transparent !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
+        border: none !important;
+        color: #9ca3af !important;
+        font-weight: 500 !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .stRadio label:hover {
+        background: rgba(255,255,255,0.05) !important;
+        color: #ffffff !important;
+    }
+    
+    .stRadio label[data-checked="true"] {
+        background: rgba(79, 70, 229, 0.2) !important;
+        color: #ffffff !important;
+        border-left: 3px solid #4f46e5 !important;
+        border-radius: 10px !important;
+    }
+    
+    .stRadio label[data-checked="true"] .nav-icon {
+        color: #4f46e5 !important;
+    }
+    
+    .stRadio label .nav-icon {
+        font-size: 1.2rem !important;
+        width: 1.8rem !important;
+        display: inline-block !important;
+        color: #6b7280 !important;
+        transition: color 0.3s ease !important;
+    }
+    
+    .stRadio label:hover .nav-icon {
+        color: #ffffff !important;
+    }
+    
+    /* Hide the radio circle */
+    .stRadio label > div:first-child {
+        display: none !important;
+    }
+    
+    .stRadio label > div:last-child {
+        flex: 1;
+    }
+    
+    /* Sidebar Dataset Info */
+    .sidebar-stats {
+        background: rgba(255,255,255,0.04);
+        padding: 0.8rem 1rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+        border: 1px solid rgba(255,255,255,0.04);
+    }
+    
+    .sidebar-stats p {
+        color: #9ca3af;
+        font-size: 0.6rem;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    .sidebar-stats .stat-value {
+        color: #ffffff;
+        font-size: 0.85rem;
+        margin: 0.2rem 0;
+        font-weight: 500;
+    }
+    
+    .sidebar-stats .stat-highlight {
+        color: #f59e0b;
+        font-weight: 600;
+    }
+    
+    .sidebar-footer {
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.6rem;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255,255,255,0.04);
+        line-height: 1.6;
+    }
+    
+    .sidebar-footer .emoji {
+        font-size: 0.8rem;
+    }
+    
+    /* ===== MAIN HEADER ===== */
     .header-container {
-        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-        padding: 2rem 2.5rem;
+        background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        padding: 1.8rem 2.5rem;
         border-radius: 16px;
         margin-bottom: 2rem;
-        border: 1px solid rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.06);
         box-shadow: 0 8px 32px rgba(0,0,0,0.3);
     }
     
     .header-title {
         color: #ffffff;
-        font-size: 2.2rem;
+        font-size: 2rem;
         font-weight: 700;
         margin: 0;
         letter-spacing: -0.5px;
     }
     
-    .header-title span {
+    .header-title .highlight {
         background: linear-gradient(90deg, #f7971e, #ffd200);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
     
     .header-subtitle {
         color: #a8b2d1;
-        font-size: 1rem;
+        font-size: 0.95rem;
         margin: 0.3rem 0 0 0;
         opacity: 0.8;
     }
     
     .header-badge {
         display: inline-block;
-        background: rgba(255, 215, 0, 0.12);
+        background: rgba(255, 215, 0, 0.1);
         color: #ffd700;
-        padding: 0.25rem 1rem;
+        padding: 0.2rem 1rem;
         border-radius: 20px;
-        font-size: 0.75rem;
-        border: 1px solid rgba(255, 215, 0, 0.2);
+        font-size: 0.7rem;
+        border: 1px solid rgba(255, 215, 0, 0.15);
         margin-top: 0.5rem;
     }
     
@@ -81,40 +220,40 @@ st.markdown("""
     
     .metric-card {
         background: white;
-        padding: 1.2rem 1.5rem;
+        padding: 1rem 1.2rem;
         border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
         border: 1px solid #f0f2f5;
         transition: all 0.3s ease;
     }
     
     .metric-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
         border-color: #4f46e5;
     }
     
     .metric-value {
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-weight: 700;
         color: #111827;
         line-height: 1.2;
     }
     
     .metric-label {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: #6b7280;
         margin-top: 0.2rem;
         font-weight: 500;
     }
     
     .metric-change {
-        font-size: 0.7rem;
-        padding: 0.15rem 0.6rem;
+        font-size: 0.65rem;
+        padding: 0.1rem 0.5rem;
         border-radius: 12px;
         font-weight: 600;
         display: inline-block;
-        margin-top: 0.3rem;
+        margin-top: 0.2rem;
     }
     
     .metric-change.up {
@@ -140,27 +279,23 @@ st.markdown("""
         gap: 0.5rem;
     }
     
-    .section-header .icon {
-        font-size: 1.3rem;
-    }
-    
     .section-header .highlight {
         color: #4f46e5;
     }
     
-    /* ===== CHART CONTAINERS ===== */
+    /* ===== CHART CARDS ===== */
     .chart-card {
         background: white;
-        padding: 1.2rem;
+        padding: 1rem 1.2rem 1.2rem 1.2rem;
         border-radius: 12px;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
         border: 1px solid #f0f2f5;
         margin: 0.5rem 0;
         height: 100%;
     }
     
     .chart-card h4 {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 600;
         color: #111827;
         margin: 0 0 0.5rem 0;
@@ -168,7 +303,7 @@ st.markdown("""
     
     /* ===== RISK CARDS ===== */
     .risk-card {
-        padding: 0.8rem 1.2rem;
+        padding: 0.7rem 1.2rem;
         border-radius: 10px;
         margin: 0.4rem 0;
         border-left: 4px solid;
@@ -180,7 +315,8 @@ st.markdown("""
     
     .risk-card .risk-level {
         font-weight: 600;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
+        min-width: 70px;
     }
     
     .risk-card .risk-segment {
@@ -191,12 +327,13 @@ st.markdown("""
     }
     
     .risk-card .risk-action {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         background: #4f46e5;
         color: white;
-        padding: 0.2rem 0.8rem;
+        padding: 0.15rem 0.8rem;
         border-radius: 20px;
         font-weight: 500;
+        white-space: nowrap;
     }
     
     .risk-critical { border-color: #dc2626; background: #fef2f2; }
@@ -207,7 +344,7 @@ st.markdown("""
     /* ===== STRATEGY CARDS ===== */
     .strategy-card {
         background: white;
-        padding: 0.8rem 1.2rem;
+        padding: 0.7rem 1.2rem;
         border-radius: 10px;
         margin: 0.4rem 0;
         border: 1px solid #e5e7eb;
@@ -219,88 +356,48 @@ st.markdown("""
     
     .strategy-card:hover {
         border-color: #4f46e5;
-        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.1);
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.08);
     }
     
     .strategy-number {
         background: linear-gradient(135deg, #4f46e5, #7c3aed);
         color: white;
-        width: 28px;
-        height: 28px;
+        width: 26px;
+        height: 26px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         flex-shrink: 0;
     }
     
     .strategy-text {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: #1f2937;
     }
     
-    /* ===== SIDEBAR ===== */
-    .css-1d391kg {
-        background: linear-gradient(180deg, #0f0c29, #302b63);
-        padding: 1.5rem 0.5rem;
-    }
-    
-    .sidebar-brand {
-        text-align: center;
-        padding: 0.5rem 0 1rem 0;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        margin-bottom: 1rem;
-    }
-    
-    .sidebar-brand .logo {
-        font-size: 2.5rem;
-    }
-    
-    .sidebar-brand h2 {
-        color: white;
-        margin: 0.3rem 0 0 0;
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-    
-    .sidebar-brand p {
-        color: #6b7280;
-        font-size: 0.7rem;
-        margin: 0.1rem 0 0 0;
-    }
-    
-    /* ===== FOOTER ===== */
-    .footer {
-        text-align: center;
-        padding: 1.5rem 0 0.5rem 0;
-        color: #9ca3af;
-        font-size: 0.75rem;
-        border-top: 1px solid #e5e7eb;
-        margin-top: 2rem;
-    }
-    
-    /* ===== PREDICTOR INPUTS ===== */
+    /* ===== PREDICTOR ===== */
     .predictor-section {
         background: #f8fafc;
-        padding: 1.5rem;
+        padding: 1.2rem 1.5rem;
         border-radius: 12px;
         border: 1px solid #e5e7eb;
         margin: 0.5rem 0;
     }
     
     .predictor-section h4 {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 600;
         color: #111827;
         margin: 0 0 0.5rem 0;
     }
     
-    /* ===== MODEL PERFORMANCE ===== */
+    /* ===== MODEL CARDS ===== */
     .model-card {
         background: white;
-        padding: 1.2rem;
+        padding: 1rem;
         border-radius: 12px;
         border: 1px solid #e5e7eb;
         text-align: center;
@@ -310,25 +407,25 @@ st.markdown("""
     
     .model-card:hover {
         border-color: #4f46e5;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
     }
     
     .model-card .model-name {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         font-weight: 600;
         color: #374151;
         margin: 0;
     }
     
     .model-card .model-score {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
         font-weight: 700;
         color: #111827;
-        margin: 0.3rem 0;
+        margin: 0.2rem 0;
     }
     
     .model-card .model-label {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         color: #6b7280;
         margin: 0;
     }
@@ -337,11 +434,25 @@ st.markdown("""
         display: inline-block;
         background: #d1fae5;
         color: #065f46;
-        font-size: 0.6rem;
+        font-size: 0.55rem;
         padding: 0.1rem 0.6rem;
         border-radius: 12px;
         font-weight: 600;
-        margin-top: 0.3rem;
+        margin-top: 0.2rem;
+    }
+    
+    /* ===== FOOTER ===== */
+    .footer {
+        text-align: center;
+        padding: 1.2rem 0 0.5rem 0;
+        color: #9ca3af;
+        font-size: 0.7rem;
+        border-top: 1px solid #e5e7eb;
+        margin-top: 2rem;
+    }
+    
+    .footer strong {
+        color: #4b5563;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -366,55 +477,74 @@ df = load_data()
 model = load_model()
 
 # ============================================
-# SIDEBAR
+# SIDEBAR - PROFESSIONAL NAVIGATION
 # ============================================
 with st.sidebar:
+    # Brand
     st.markdown("""
     <div class="sidebar-brand">
-        <div class="logo">📊</div>
-        <h2>Churn Analytics</h2>
+        <span class="logo">📊</span>
+        <h2>Churn <span>Analytics</span></h2>
         <p>Customer Retention Platform</p>
     </div>
     """, unsafe_allow_html=True)
     
-    page = st.radio(
+    # Navigation - Using st.radio with custom styling
+    # Each option has an icon + label
+    nav_options = {
+        "Overview": "🏠 Overview",
+        "Analysis": "📈 Analysis", 
+        "Predictor": "🔮 Predictor",
+        "Models": "📊 Models",
+        "Insights": "💡 Insights"
+    }
+    
+    # Custom navigation using st.radio with hidden radio buttons
+    # We use the index to control which page is shown
+    page_names = list(nav_options.keys())
+    page_icons = ["🏠", "📈", "🔮", "📊", "💡"]
+    page_labels = ["Overview", "Analysis", "Predictor", "Models", "Insights"]
+    
+    # Create radio with custom display
+    selected_index = st.radio(
         "",
-        ["🏠 Overview", "📈 Analysis", "🔮 Predictor", "📊 Models", "💡 Insights"],
+        options=range(len(page_labels)),
+        format_func=lambda i: f"{page_icons[i]} {page_labels[i]}",
         index=0,
-        key="nav"
+        key="nav_radio"
     )
     
-    st.markdown("---")
+    page = page_labels[selected_index]
     
+    # Dataset Stats
     total = len(df)
     churned = df[df['Churn'] == 'Yes'].shape[0]
     churn_rate = (churned / total) * 100
     
-    st.markdown(f"""
-    <div style="background: rgba(255,255,255,0.05); padding: 0.8rem 1rem; border-radius: 10px; margin: 0.5rem 0;">
-        <p style="color: #9ca3af; font-size: 0.6rem; margin: 0; text-transform: uppercase; letter-spacing: 1px;">Dataset Snapshot</p>
-        <p style="color: white; margin: 0.2rem 0; font-size: 0.85rem;"><strong>Total:</strong> {total:,}</p>
-        <p style="color: white; margin: 0.2rem 0; font-size: 0.85rem;"><strong>Churned:</strong> {churned:,}</p>
-        <p style="color: #f59e0b; margin: 0.2rem 0; font-size: 0.85rem;"><strong>Rate:</strong> {churn_rate:.1f}%</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
     st.markdown("""
-    <div style="text-align: center; color: #6b7280; font-size: 0.65rem; margin-top: 1rem;">
-        <p>⚡ Real-time Analytics</p>
-        <p>📊 Interactive Visualizations</p>
-        <p>🎯 Actionable Insights</p>
+    <div class="sidebar-stats">
+        <p>📊 Dataset Snapshot</p>
+        <div class="stat-value">Total: <strong style="color:white;">{:,}</strong></div>
+        <div class="stat-value">Churned: <strong style="color:white;">{:,}</strong></div>
+        <div class="stat-value">Rate: <strong class="stat-highlight">{:.1f}%</strong></div>
+    </div>
+    """.format(total, churned, churn_rate), unsafe_allow_html=True)
+    
+    # Footer
+    st.markdown("""
+    <div class="sidebar-footer">
+        <span class="emoji">⚡</span> Real-time Analytics<br>
+        <span class="emoji">📊</span> Interactive Visualizations<br>
+        <span class="emoji">🎯</span> Actionable Insights
     </div>
     """, unsafe_allow_html=True)
 
 # ============================================
-# HEADER
+# MAIN HEADER
 # ============================================
 st.markdown("""
 <div class="header-container">
-    <h1 class="header-title">📊 Customer Churn <span>Analytics</span></h1>
+    <h1 class="header-title">📊 Customer Churn <span class="highlight">Analytics</span></h1>
     <p class="header-subtitle">AI-powered insights to reduce customer churn and improve retention</p>
     <span class="header-badge">✨ IBM Telco Dataset • 7,043 Customers</span>
 </div>
@@ -423,8 +553,8 @@ st.markdown("""
 # ============================================
 # PAGE: OVERVIEW
 # ============================================
-if page == "🏠 Overview":
-    # Metrics Row
+if page == "Overview":
+    # Metrics
     col1, col2, col3, col4 = st.columns(4)
     
     total_customers = len(df)
@@ -495,7 +625,6 @@ if page == "🏠 Overview":
         st.markdown('<div class="chart-card"><h4>📈 Churn Rate by Contract</h4>', unsafe_allow_html=True)
         contract_churn = df.groupby('Contract').apply(lambda x: (x['Churn'] == 'Yes').mean() * 100).reset_index()
         contract_churn.columns = ['Contract', 'Churn Rate']
-        colors = ['#dc2626' if x > 30 else '#f59e0b' if x > 15 else '#22c55e' for x in contract_churn['Churn Rate']]
         fig = px.bar(
             contract_churn,
             x='Contract',
@@ -570,10 +699,9 @@ if page == "🏠 Overview":
 # ============================================
 # PAGE: ANALYSIS
 # ============================================
-elif page == "📈 Analysis":
-    st.markdown('<div class="section-header"><span class="icon">🔍</span> <span class="highlight">Churn Analysis</span></div>', unsafe_allow_html=True)
+elif page == "Analysis":
+    st.markdown('<div class="section-header">🔍 <span class="highlight">Churn Analysis</span></div>', unsafe_allow_html=True)
     
-    # Filters
     col1, col2, col3 = st.columns(3)
     with col1:
         contracts = st.multiselect(
@@ -603,7 +731,6 @@ elif page == "📈 Analysis":
         (df['InternetService'].isin(internet))
     ]
     
-    # Filtered Stats
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.markdown(f"""
@@ -681,11 +808,11 @@ elif page == "📈 Analysis":
 # ============================================
 # PAGE: PREDICTOR
 # ============================================
-elif page == "🔮 Predictor":
-    st.markdown('<div class="section-header"><span class="icon">🔮</span> <span class="highlight">Churn Predictor</span></div>', unsafe_allow_html=True)
+elif page == "Predictor":
+    st.markdown('<div class="section-header">🔮 <span class="highlight">Churn Predictor</span></div>', unsafe_allow_html=True)
     
     st.markdown("""
-    <div style="background: #eef2ff; padding: 1rem 1.5rem; border-radius: 10px; border-left: 4px solid #4f46e5; margin: 0.5rem 0;">
+    <div style="background: #eef2ff; padding: 0.8rem 1.2rem; border-radius: 10px; border-left: 4px solid #4f46e5; margin: 0.5rem 0;">
         <strong>💡 How it works:</strong> Enter customer details below to get a churn probability score.
     </div>
     """, unsafe_allow_html=True)
@@ -750,34 +877,36 @@ elif page == "🔮 Predictor":
                     color = "#22c55e"
                     bg = "#f0fdf4"
                     border = "#22c55e"
+                    action = "Customer is likely to stay. Continue providing quality service."
                 elif prob < 0.6:
                     level = "🟡 Medium Risk"
                     color = "#f59e0b"
                     bg = "#fffbeb"
                     border = "#f59e0b"
+                    action = "Customer shows signs of potential churn. Consider engagement offers."
                 else:
                     level = "🔴 High Risk"
                     color = "#dc2626"
                     bg = "#fef2f2"
                     border = "#dc2626"
+                    action = "Customer is at high risk! Immediate retention action needed."
                 
                 st.markdown(f"""
-                <div style="background: {bg}; padding: 2rem; border-radius: 12px; border: 2px solid {border}; text-align: center;">
-                    <h2 style="color: {color}; margin: 0; font-size: 1.8rem;">{level}</h2>
+                <div style="background: {bg}; padding: 1.5rem; border-radius: 12px; border: 2px solid {border}; text-align: center;">
+                    <h2 style="color: {color}; margin: 0; font-size: 1.5rem;">{level}</h2>
                     <div style="font-size: 2.5rem; font-weight: 700; margin: 0.5rem 0; color: #111827;">
                         {prob:.1%}
                     </div>
-                    <p style="color: #4b5563; margin: 0; font-size: 0.9rem;">{action if 'action' in locals() else 'Recommended action needed.'}</p>
+                    <p style="color: #4b5563; margin: 0; font-size: 0.85rem;">{action}</p>
                 </div>
                 """, unsafe_allow_html=True)
 
 # ============================================
 # PAGE: MODELS
 # ============================================
-elif page == "📊 Models":
-    st.markdown('<div class="section-header"><span class="icon">📊</span> <span class="highlight">Model Performance</span></div>', unsafe_allow_html=True)
+elif page == "Models":
+    st.markdown('<div class="section-header">📊 <span class="highlight">Model Performance</span></div>', unsafe_allow_html=True)
     
-    # Model Cards
     col1, col2, col3, col4 = st.columns(4)
     
     models = [
@@ -796,14 +925,13 @@ elif page == "📊 Models":
                 <p class="model-name">{model['name']}</p>
                 <p class="model-score">{model['roc']:.4f}</p>
                 <p class="model-label">ROC-AUC</p>
-                <p style="font-size: 0.8rem; color: #6b7280; margin: 0.2rem 0;">PR-AUC: {model['pr']:.4f}</p>
+                <p style="font-size: 0.7rem; color: #6b7280; margin: 0.2rem 0;">PR-AUC: {model['pr']:.4f}</p>
                 {best_badge}
             </div>
             """, unsafe_allow_html=True)
     
     st.markdown("---")
     
-    # Model Comparison Chart
     st.markdown('<div class="chart-card"><h4>📊 Model Performance Comparison</h4>', unsafe_allow_html=True)
     model_data = pd.DataFrame(models)
     fig = px.bar(
@@ -827,9 +955,8 @@ elif page == "📊 Models":
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Feature Importance
     st.markdown("---")
-    st.markdown('<div class="section-header"><span class="icon">🔑</span> <span class="highlight">Top Features Driving Churn</span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">🔑 <span class="highlight">Top Features Driving Churn</span></div>', unsafe_allow_html=True)
     
     try:
         rf_importance = pd.read_csv("outputs/feature_importance_rf.csv", index_col=0)
@@ -860,10 +987,9 @@ elif page == "📊 Models":
 # ============================================
 # PAGE: INSIGHTS
 # ============================================
-elif page == "💡 Insights":
-    st.markdown('<div class="section-header"><span class="icon">💡</span> <span class="highlight">Business Insights & Recommendations</span></div>', unsafe_allow_html=True)
+elif page == "Insights":
+    st.markdown('<div class="section-header">💡 <span class="highlight">Business Insights & Recommendations</span></div>', unsafe_allow_html=True)
     
-    # Risk Segments
     st.markdown("### 🔴 High-Risk Customer Segments")
     
     risks = [
@@ -884,7 +1010,6 @@ elif page == "💡 Insights":
     
     st.markdown("---")
     
-    # Retention Strategies
     st.markdown("### ✅ Recommended Retention Strategies")
     
     strategies = [
@@ -904,7 +1029,6 @@ elif page == "💡 Insights":
     
     st.markdown("---")
     
-    # KPIs
     st.markdown("### 📊 Key Metrics to Monitor")
     
     kpi_data = pd.DataFrame({
@@ -935,7 +1059,6 @@ elif page == "💡 Insights":
         hide_index=True
     )
     
-    # Download Report
     st.markdown("---")
     st.markdown("### 📥 Download Report")
     
