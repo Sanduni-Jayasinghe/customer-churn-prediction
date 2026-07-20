@@ -105,7 +105,6 @@ st.markdown("""
         color: #4f46e5 !important;
     }
     
-    /* Hide the radio circle */
     .stRadio label > div:first-child {
         display: none !important;
     }
@@ -260,7 +259,7 @@ st.markdown("""
     
     /* ===== SECTION HEADERS ===== */
     .section-header {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 600;
         color: #111827;
         margin: 1.5rem 0 1rem 0;
@@ -287,10 +286,53 @@ st.markdown("""
     }
     
     .chart-card h4 {
-        font-size: 0.9rem;
-        font-weight: 600;
+        font-size: 1.1rem;
+        font-weight: 700;
         color: #111827;
         margin: 0 0 0.5rem 0;
+        padding-bottom: 0.3rem;
+        border-bottom: 2px solid #f3f4f6;
+    }
+    
+    /* ===== PREDICTOR INFO BOX - FIXED ===== */
+    .info-box {
+        background: #dbeafe !important;
+        padding: 1rem 1.5rem !important;
+        border-radius: 10px !important;
+        border-left: 5px solid #2563eb !important;
+        margin: 0.5rem 0 !important;
+        color: #1e293b !important;
+    }
+    
+    .info-box strong {
+        color: #1e40af !important;
+    }
+    
+    /* ===== KPI TABLE STYLING ===== */
+    .kpi-table {
+        background: #ffffff;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+    }
+    
+    .kpi-table th {
+        background: #1a1a2e !important;
+        color: #ffffff !important;
+        padding: 0.8rem 1rem !important;
+        font-weight: 600 !important;
+        font-size: 0.85rem !important;
+    }
+    
+    .kpi-table td {
+        padding: 0.7rem 1rem !important;
+        color: #1f2937 !important;
+        font-size: 0.85rem !important;
+        border-bottom: 1px solid #f3f4f6 !important;
+    }
+    
+    .kpi-table tr:hover td {
+        background: #f8fafc !important;
     }
     
     /* ===== RISK CARDS ===== */
@@ -469,7 +511,7 @@ df = load_data()
 model = load_model()
 
 # ============================================
-# SIDEBAR - PROFESSIONAL NAVIGATION (FIXED)
+# SIDEBAR - PROFESSIONAL NAVIGATION
 # ============================================
 with st.sidebar:
     # Brand
@@ -481,17 +523,17 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    # Navigation - FIXED: Added proper label
+    # Navigation
     nav_options = ["Overview", "Analysis", "Predictor", "Models", "Insights"]
     nav_icons = ["🏠", "📈", "🔮", "📊", "💡"]
     
     page_index = st.radio(
-        label="Navigation",  # FIXED: Added label
+        label="Navigation",
         options=range(len(nav_options)),
         format_func=lambda i: f"{nav_icons[i]} {nav_options[i]}",
         index=0,
         key="nav_radio",
-        label_visibility="collapsed"  # Hide the label but keep it accessible
+        label_visibility="collapsed"
     )
     page = nav_options[page_index]
 
@@ -580,22 +622,32 @@ if page == "Overview":
     with col1:
         st.markdown('<div class="chart-card"><h4>📊 Churn Distribution</h4>', unsafe_allow_html=True)
         churn_counts = df['Churn'].value_counts()
+        
         fig = go.Figure(data=[go.Pie(
-            labels=['No Churn', 'Churn'],
+            labels=['✅ No Churn', '⚠️ Churn'],
             values=churn_counts.values,
             hole=0.5,
             marker=dict(colors=['#22c55e', '#dc2626']),
             textinfo='label+percent',
             textposition='outside',
-            pull=[0, 0.05]
+            textfont=dict(size=14, color='#1f2937'),
+            pull=[0, 0.05],
+            showlegend=False
         )])
         fig.update_layout(
-            height=320,
-            showlegend=False,
-            margin=dict(t=10, b=10, l=10, r=10),
+            height=340,
+            margin=dict(t=20, b=20, l=20, r=20),
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='#1f2937', size=12)
+            font=dict(color='#1f2937', size=13),
+            annotations=[
+                dict(
+                    text=f'Total: {len(df):,} Customers',
+                    x=0.5, y=-0.08,
+                    font=dict(size=13, color='#6b7280'),
+                    showarrow=False
+                )
+            ]
         )
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
@@ -604,6 +656,7 @@ if page == "Overview":
         st.markdown('<div class="chart-card"><h4>📈 Churn Rate by Contract</h4>', unsafe_allow_html=True)
         contract_churn = df.groupby('Contract').apply(lambda x: (x['Churn'] == 'Yes').mean() * 100).reset_index()
         contract_churn.columns = ['Contract', 'Churn Rate']
+        
         fig = px.bar(
             contract_churn,
             x='Contract',
@@ -612,15 +665,20 @@ if page == "Overview":
             color_continuous_scale=['#22c55e', '#f59e0b', '#dc2626'],
             text=contract_churn['Churn Rate'].round(1),
             template='plotly_white',
-            height=320
+            height=340
         )
-        fig.update_traces(textposition='outside', marker_line_width=0)
+        fig.update_traces(
+            textposition='outside', 
+            marker_line_width=0,
+            textfont=dict(size=13, color='#1f2937')
+        )
         fig.update_layout(
             showlegend=False,
             margin=dict(t=10, b=30, l=10, r=10),
             xaxis_title="",
             yaxis_title="Churn Rate (%)",
-            font=dict(color='#1f2937', size=11)
+            font=dict(color='#1f2937', size=12),
+            yaxis=dict(range=[0, max(contract_churn['Churn Rate']) * 1.15])
         )
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
@@ -629,7 +687,7 @@ if page == "Overview":
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown('<div class="chart-card"><h4>📉 Tenure Distribution</h4>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-card"><h4>📉 Tenure Distribution by Churn Status</h4>', unsafe_allow_html=True)
         fig = px.histogram(
             df,
             x='tenure',
@@ -638,22 +696,24 @@ if page == "Overview":
             barmode='stack',
             color_discrete_map={'Yes': '#dc2626', 'No': '#22c55e'},
             template='plotly_white',
-            height=300,
-            labels={'tenure': 'Tenure (months)', 'count': 'Customers'}
+            height=320,
+            labels={'tenure': 'Tenure (months)', 'count': 'Customers'},
+            category_orders={'Churn': ['No', 'Yes']}
         )
         fig.update_layout(
             margin=dict(t=10, b=30, l=10, r=10),
             legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1),
-            font=dict(color='#1f2937', size=11)
+            font=dict(color='#1f2937', size=12)
         )
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
-        st.markdown('<div class="chart-card"><h4>💳 Churn by Payment Method</h4>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-card"><h4>💳 Churn Rate by Payment Method</h4>', unsafe_allow_html=True)
         payment_churn = df.groupby('PaymentMethod').apply(lambda x: (x['Churn'] == 'Yes').mean() * 100).reset_index()
         payment_churn.columns = ['Payment Method', 'Churn Rate']
         payment_churn = payment_churn.sort_values('Churn Rate', ascending=False)
+        
         fig = px.bar(
             payment_churn,
             x='Payment Method',
@@ -662,15 +722,20 @@ if page == "Overview":
             color_continuous_scale=['#22c55e', '#f59e0b', '#dc2626'],
             text=payment_churn['Churn Rate'].round(1),
             template='plotly_white',
-            height=300
+            height=320
         )
-        fig.update_traces(textposition='outside', marker_line_width=0)
+        fig.update_traces(
+            textposition='outside', 
+            marker_line_width=0,
+            textfont=dict(size=12, color='#1f2937')
+        )
         fig.update_layout(
             showlegend=False,
             margin=dict(t=10, b=40, l=10, r=10),
             xaxis_title="",
             yaxis_title="Churn Rate (%)",
-            font=dict(color='#1f2937', size=10)
+            font=dict(color='#1f2937', size=11),
+            yaxis=dict(range=[0, max(payment_churn['Churn Rate']) * 1.15])
         )
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
@@ -746,9 +811,10 @@ elif page == "Analysis":
     col1, col2 = st.columns(2)
     
     with col1:
-        st.markdown('<div class="chart-card"><h4>🌐 Churn by Internet Service</h4>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-card"><h4>🌐 Churn Rate by Internet Service</h4>', unsafe_allow_html=True)
         service_churn = filtered_df.groupby('InternetService').apply(lambda x: (x['Churn'] == 'Yes').mean() * 100).reset_index()
         service_churn.columns = ['Service', 'Churn Rate']
+        
         fig = px.bar(
             service_churn,
             x='Service',
@@ -759,16 +825,20 @@ elif page == "Analysis":
             template='plotly_white',
             height=320
         )
-        fig.update_traces(textposition='outside')
-        fig.update_layout(showlegend=False, margin=dict(t=10, b=30))
+        fig.update_traces(
+            textposition='outside',
+            textfont=dict(size=13, color='#1f2937')
+        )
+        fig.update_layout(showlegend=False, margin=dict(t=10, b=30), font=dict(size=12))
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col2:
-        st.markdown('<div class="chart-card"><h4>💳 Churn by Payment Method</h4>', unsafe_allow_html=True)
+        st.markdown('<div class="chart-card"><h4>💳 Churn Rate by Payment Method</h4>', unsafe_allow_html=True)
         payment_churn = filtered_df.groupby('PaymentMethod').apply(lambda x: (x['Churn'] == 'Yes').mean() * 100).reset_index()
         payment_churn.columns = ['Payment Method', 'Churn Rate']
         payment_churn = payment_churn.sort_values('Churn Rate', ascending=False)
+        
         fig = px.bar(
             payment_churn,
             x='Payment Method',
@@ -779,20 +849,24 @@ elif page == "Analysis":
             template='plotly_white',
             height=320
         )
-        fig.update_traces(textposition='outside')
-        fig.update_layout(showlegend=False, margin=dict(t=10, b=40))
+        fig.update_traces(
+            textposition='outside',
+            textfont=dict(size=12, color='#1f2937')
+        )
+        fig.update_layout(showlegend=False, margin=dict(t=10, b=40), font=dict(size=11))
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# PAGE: PREDICTOR
+# PAGE: PREDICTOR - FIXED INFO BOX
 # ============================================
 elif page == "Predictor":
     st.markdown('<div class="section-header">🔮 <span class="highlight">Churn Predictor</span></div>', unsafe_allow_html=True)
     
     st.markdown("""
-    <div style="background: #eef2ff; padding: 0.8rem 1.2rem; border-radius: 10px; border-left: 4px solid #4f46e5; margin: 0.5rem 0;">
+    <div class="info-box">
         <strong>💡 How it works:</strong> Enter customer details below to get a churn probability score.
+        The model analyzes customer behavior patterns to predict churn risk.
     </div>
     """, unsafe_allow_html=True)
     
@@ -929,7 +1003,7 @@ elif page == "Models":
         legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1),
         yaxis_title="Score",
         xaxis_title="",
-        font=dict(color='#1f2937', size=11)
+        font=dict(color='#1f2937', size=12)
     )
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -957,14 +1031,14 @@ elif page == "Models":
             xaxis_title="Importance",
             yaxis_title="",
             showlegend=False,
-            font=dict(color='#1f2937', size=11)
+            font=dict(color='#1f2937', size=12)
         )
         st.plotly_chart(fig, use_container_width=True)
     except:
         st.info("ℹ️ Feature importance data not available. Run the notebook first to generate this chart.")
 
 # ============================================
-# PAGE: INSIGHTS
+# PAGE: INSIGHTS - FIXED KPI TABLE
 # ============================================
 elif page == "Insights":
     st.markdown('<div class="section-header">💡 <span class="highlight">Business Insights & Recommendations</span></div>', unsafe_allow_html=True)
@@ -1010,12 +1084,13 @@ elif page == "Insights":
     
     st.markdown("### 📊 Key Metrics to Monitor")
     
+    # Using st.dataframe with explicit styling for visibility
     kpi_data = pd.DataFrame({
         'Metric': [
-            "Monthly churn rate by contract type",
-            "Churn rate at tenure milestones",
-            "Customer satisfaction scores (high-risk)",
-            "Retention campaign conversion rate"
+            "📊 Monthly churn rate by contract type",
+            "🎯 Churn rate at tenure milestones",
+            "⭐ Customer satisfaction scores (high-risk)",
+            "📈 Retention campaign conversion rate"
         ],
         'Target': [
             "< 15% for month-to-month",
@@ -1030,10 +1105,30 @@ elif page == "Insights":
             "🟡 Monitor"
         ]
     })
+    
+    # Apply custom styling to the dataframe
     st.dataframe(
-        kpi_data.style.set_properties(**{'background-color': '#f8fafc'}).set_table_styles([
-            {'selector': 'thead th', 'props': [('background', '#4f46e5'), ('color', 'white')]}
-        ]),
+        kpi_data.style
+            .set_properties(**{
+                'background-color': '#f8fafc',
+                'color': '#1f2937',
+                'border-color': '#e5e7eb',
+                'padding': '10px'
+            })
+            .set_table_styles([
+                {'selector': 'thead th', 'props': [
+                    ('background', '#1a1a2e'), 
+                    ('color', 'white'), 
+                    ('font-weight', '600'),
+                    ('padding', '10px')
+                ]},
+                {'selector': 'tbody tr:hover', 'props': [
+                    ('background', '#eef2ff')
+                ]}
+            ])
+            .set_properties(subset=['Status'], **{
+                'font-weight': '600'
+            }),
         use_container_width=True,
         hide_index=True
     )
