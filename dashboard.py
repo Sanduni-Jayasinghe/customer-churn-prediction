@@ -18,7 +18,7 @@ st.set_page_config(
 )
 
 # ============================================
-# CUSTOM CSS - PROFESSIONAL DASHBOARD
+# CUSTOM CSS - UPDATED
 # ============================================
 st.markdown("""
 <style>
@@ -68,45 +68,61 @@ st.markdown("""
         letter-spacing: 1px;
     }
     
-    /* ===== NAVIGATION ===== */
+    /* ===== NAVIGATION - NO BULLETS, VERTICAL, HOVER EFFECT ===== */
+    /* Hide default radio completely */
+    .stRadio {
+        margin: 0;
+        padding: 0;
+    }
+    
     .stRadio > div {
-        gap: 0.2rem;
+        gap: 0.1rem;
+        padding: 0.3rem 0.5rem;
+    }
+    
+    /* Hide radio circles */
+    .stRadio label > div:first-child {
+        display: none !important;
     }
     
     .stRadio label {
         display: flex !important;
         align-items: center !important;
         gap: 0.8rem !important;
-        padding: 0.65rem 1rem !important;
+        padding: 0.8rem 1.2rem !important;
         margin: 0.15rem 0 !important;
         border-radius: 10px !important;
         background: transparent !important;
-        transition: all 0.25s ease !important;
+        transition: all 0.3s ease !important;
         cursor: pointer !important;
         border: none !important;
         color: #9ca3af !important;
         font-weight: 500 !important;
-        font-size: 0.9rem !important;
+        font-size: 1.1rem !important;
+        width: 100% !important;
+        position: relative !important;
     }
     
+    /* Stronger hover effect */
     .stRadio label:hover {
-        background: rgba(255,255,255,0.06) !important;
+        background: rgba(255,255,255,0.1) !important;
         color: #ffffff !important;
+        transform: translateX(6px) !important;
+        box-shadow: 0 2px 12px rgba(79, 70, 229, 0.15) !important;
     }
     
+    /* Active state - Professional highlight */
     .stRadio label[data-checked="true"] {
         background: rgba(79, 70, 229, 0.2) !important;
         color: #ffffff !important;
         border-left: 3px solid #4f46e5 !important;
         border-radius: 0 10px 10px 0 !important;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1) !important;
+        transform: translateX(0px) !important;
     }
     
     .stRadio label[data-checked="true"] .nav-icon {
         color: #4f46e5 !important;
-    }
-    
-    .stRadio label > div:first-child {
-        display: none !important;
     }
     
     .stRadio label > div:last-child {
@@ -114,6 +130,32 @@ st.markdown("""
         display: flex !important;
         align-items: center !important;
         gap: 0.8rem !important;
+    }
+    
+    /* Nav icon styling */
+    .nav-icon {
+        font-size: 1.3rem !important;
+        width: 2rem;
+        display: inline-block;
+        text-align: center;
+        color: #6b7280;
+        transition: color 0.3s ease;
+    }
+    
+    .nav-text {
+        color: #9ca3af;
+        transition: color 0.3s ease;
+        font-size: 1.05rem !important;
+        font-weight: 500 !important;
+    }
+    
+    .stRadio label:hover .nav-text {
+        color: #ffffff !important;
+    }
+    
+    .stRadio label[data-checked="true"] .nav-text {
+        color: #ffffff !important;
+        font-weight: 600 !important;
     }
     
     /* ===== SIDEBAR STATS ===== */
@@ -294,7 +336,7 @@ st.markdown("""
         border-bottom: 2px solid #f3f4f6;
     }
     
-    /* ===== PREDICTOR INFO BOX - FIXED ===== */
+    /* ===== INFO BOX ===== */
     .info-box {
         background: #dbeafe !important;
         padding: 1rem 1.5rem !important;
@@ -306,33 +348,6 @@ st.markdown("""
     
     .info-box strong {
         color: #1e40af !important;
-    }
-    
-    /* ===== KPI TABLE STYLING ===== */
-    .kpi-table {
-        background: #ffffff;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-        overflow: hidden;
-    }
-    
-    .kpi-table th {
-        background: #1a1a2e !important;
-        color: #ffffff !important;
-        padding: 0.8rem 1rem !important;
-        font-weight: 600 !important;
-        font-size: 0.85rem !important;
-    }
-    
-    .kpi-table td {
-        padding: 0.7rem 1rem !important;
-        color: #1f2937 !important;
-        font-size: 0.85rem !important;
-        border-bottom: 1px solid #f3f4f6 !important;
-    }
-    
-    .kpi-table tr:hover td {
-        background: #f8fafc !important;
     }
     
     /* ===== RISK CARDS ===== */
@@ -511,7 +526,7 @@ df = load_data()
 model = load_model()
 
 # ============================================
-# SIDEBAR - PROFESSIONAL NAVIGATION
+# SIDEBAR - PROFESSIONAL NAVIGATION (NO BULLETS)
 # ============================================
 with st.sidebar:
     # Brand
@@ -523,19 +538,20 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    # Navigation
+    # Navigation - Using selectbox for cleaner look (no bullets)
     nav_options = ["Overview", "Analysis", "Predictor", "Models", "Insights"]
     nav_icons = ["🏠", "📈", "🔮", "📊", "💡"]
     
-    page_index = st.radio(
-        label="Navigation",
-        options=range(len(nav_options)),
-        format_func=lambda i: f"{nav_icons[i]} {nav_options[i]}",
+    # Use selectbox instead of radio for cleaner vertical navigation
+    selected_page = st.selectbox(
+        "Navigation",
+        options=nav_options,
         index=0,
-        key="nav_radio",
+        key="nav_select",
+        format_func=lambda x: f"{nav_icons[nav_options.index(x)]} {x}",
         label_visibility="collapsed"
     )
-    page = nav_options[page_index]
+    page = selected_page
 
     # Dataset Stats
     total = len(df)
@@ -630,7 +646,7 @@ if page == "Overview":
             marker=dict(colors=['#22c55e', '#dc2626']),
             textinfo='label+percent',
             textposition='outside',
-            textfont=dict(size=14, color='#1f2937'),
+            textfont=dict(size=16, color='#1f2937', family='Arial Black'),
             pull=[0, 0.05],
             showlegend=False
         )])
@@ -639,12 +655,12 @@ if page == "Overview":
             margin=dict(t=20, b=20, l=20, r=20),
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='#1f2937', size=13),
+            font=dict(color='#1f2937', size=14),
             annotations=[
                 dict(
                     text=f'Total: {len(df):,} Customers',
                     x=0.5, y=-0.08,
-                    font=dict(size=13, color='#6b7280'),
+                    font=dict(size=14, color='#6b7280'),
                     showarrow=False
                 )
             ]
@@ -670,14 +686,14 @@ if page == "Overview":
         fig.update_traces(
             textposition='outside', 
             marker_line_width=0,
-            textfont=dict(size=13, color='#1f2937')
+            textfont=dict(size=14, color='#1f2937')
         )
         fig.update_layout(
             showlegend=False,
             margin=dict(t=10, b=30, l=10, r=10),
             xaxis_title="",
             yaxis_title="Churn Rate (%)",
-            font=dict(color='#1f2937', size=12),
+            font=dict(color='#1f2937', size=13),
             yaxis=dict(range=[0, max(contract_churn['Churn Rate']) * 1.15])
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -703,7 +719,7 @@ if page == "Overview":
         fig.update_layout(
             margin=dict(t=10, b=30, l=10, r=10),
             legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1),
-            font=dict(color='#1f2937', size=12)
+            font=dict(color='#1f2937', size=13)
         )
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
@@ -727,53 +743,67 @@ if page == "Overview":
         fig.update_traces(
             textposition='outside', 
             marker_line_width=0,
-            textfont=dict(size=12, color='#1f2937')
+            textfont=dict(size=13, color='#1f2937')
         )
         fig.update_layout(
             showlegend=False,
             margin=dict(t=10, b=40, l=10, r=10),
             xaxis_title="",
             yaxis_title="Churn Rate (%)",
-            font=dict(color='#1f2937', size=11),
+            font=dict(color='#1f2937', size=12),
             yaxis=dict(range=[0, max(payment_churn['Churn Rate']) * 1.15])
         )
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# PAGE: ANALYSIS
+# PAGE: ANALYSIS - WITH DROPDOWN MENUS
 # ============================================
 elif page == "Analysis":
     st.markdown('<div class="section-header">🔍 <span class="highlight">Churn Analysis</span></div>', unsafe_allow_html=True)
     
+    # Filter Section - Using dropdown menus instead of multiselect
+    st.markdown("### 📋 Filter Data")
+    
     col1, col2, col3 = st.columns(3)
+    
     with col1:
-        contracts = st.multiselect(
-            "Contract Type",
+        st.markdown("**Contract Type**")
+        contracts = st.selectbox(
+            "Select contract type",
             options=df['Contract'].unique(),
-            default=df['Contract'].unique(),
-            key='contract_filter'
-        )
-    with col2:
-        genders = st.multiselect(
-            "Gender",
-            options=df['gender'].unique(),
-            default=df['gender'].unique(),
-            key='gender_filter'
-        )
-    with col3:
-        internet = st.multiselect(
-            "Internet Service",
-            options=df['InternetService'].unique(),
-            default=df['InternetService'].unique(),
-            key='internet_filter'
+            index=0,
+            key='contract_filter_single'
         )
     
+    with col2:
+        st.markdown("**Gender**")
+        genders = st.selectbox(
+            "Select gender",
+            options=df['gender'].unique(),
+            index=0,
+            key='gender_filter_single'
+        )
+    
+    with col3:
+        st.markdown("**Internet Service**")
+        internet = st.selectbox(
+            "Select internet service",
+            options=df['InternetService'].unique(),
+            index=0,
+            key='internet_filter_single'
+        )
+    
+    # Filter data with single selections
     filtered_df = df[
-        (df['Contract'].isin(contracts)) &
-        (df['gender'].isin(genders)) &
-        (df['InternetService'].isin(internet))
+        (df['Contract'] == contracts) &
+        (df['gender'] == genders) &
+        (df['InternetService'] == internet)
     ]
+    
+    # Filtered Stats
+    st.markdown("---")
+    st.markdown("### 📊 Filtered Results")
     
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -827,9 +857,9 @@ elif page == "Analysis":
         )
         fig.update_traces(
             textposition='outside',
-            textfont=dict(size=13, color='#1f2937')
+            textfont=dict(size=14, color='#1f2937')
         )
-        fig.update_layout(showlegend=False, margin=dict(t=10, b=30), font=dict(size=12))
+        fig.update_layout(showlegend=False, margin=dict(t=10, b=30), font=dict(size=13))
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
@@ -851,14 +881,14 @@ elif page == "Analysis":
         )
         fig.update_traces(
             textposition='outside',
-            textfont=dict(size=12, color='#1f2937')
+            textfont=dict(size=13, color='#1f2937')
         )
-        fig.update_layout(showlegend=False, margin=dict(t=10, b=40), font=dict(size=11))
+        fig.update_layout(showlegend=False, margin=dict(t=10, b=40), font=dict(size=12))
         st.plotly_chart(fig, use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# PAGE: PREDICTOR - FIXED INFO BOX
+# PAGE: PREDICTOR
 # ============================================
 elif page == "Predictor":
     st.markdown('<div class="section-header">🔮 <span class="highlight">Churn Predictor</span></div>', unsafe_allow_html=True)
@@ -1003,7 +1033,7 @@ elif page == "Models":
         legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1),
         yaxis_title="Score",
         xaxis_title="",
-        font=dict(color='#1f2937', size=12)
+        font=dict(color='#1f2937', size=13)
     )
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -1031,14 +1061,14 @@ elif page == "Models":
             xaxis_title="Importance",
             yaxis_title="",
             showlegend=False,
-            font=dict(color='#1f2937', size=12)
+            font=dict(color='#1f2937', size=13)
         )
         st.plotly_chart(fig, use_container_width=True)
     except:
         st.info("ℹ️ Feature importance data not available. Run the notebook first to generate this chart.")
 
 # ============================================
-# PAGE: INSIGHTS - FIXED KPI TABLE
+# PAGE: INSIGHTS
 # ============================================
 elif page == "Insights":
     st.markdown('<div class="section-header">💡 <span class="highlight">Business Insights & Recommendations</span></div>', unsafe_allow_html=True)
@@ -1084,7 +1114,6 @@ elif page == "Insights":
     
     st.markdown("### 📊 Key Metrics to Monitor")
     
-    # Using st.dataframe with explicit styling for visibility
     kpi_data = pd.DataFrame({
         'Metric': [
             "📊 Monthly churn rate by contract type",
@@ -1106,7 +1135,6 @@ elif page == "Insights":
         ]
     })
     
-    # Apply custom styling to the dataframe
     st.dataframe(
         kpi_data.style
             .set_properties(**{
