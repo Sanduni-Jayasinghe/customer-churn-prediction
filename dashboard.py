@@ -18,37 +18,58 @@ st.set_page_config(
 )
 
 # ============================================
-# CUSTOM CSS - PROFESSIONAL DASHBOARD
+# CUSTOM CSS - ULTRA PROFESSIONAL DASHBOARD
 # ============================================
 st.markdown("""
 <style>
-    /* ===== SIDEBAR STYLING ===== */
+    /* ===== GLOBAL RESET ===== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    /* ===== SIDEBAR - PROFESSIONAL VERTICAL NAV ===== */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #0f0c29 0%, #1a1a3e 50%, #24243e 100%);
         padding: 0;
-        border-right: 1px solid rgba(255,255,255,0.05);
+        border-right: 1px solid rgba(255,255,255,0.06);
+        width: 280px !important;
+        min-width: 280px !important;
+        max-width: 280px !important;
+        position: fixed !important;
+        height: 100vh !important;
+        overflow-y: auto !important;
+        z-index: 100 !important;
     }
     
     section[data-testid="stSidebar"] .css-1d391kg {
         padding: 0.5rem 0.8rem;
+        width: 100%;
     }
     
-    /* Sidebar Brand */
+    /* Hide default Streamlit elements */
+    section[data-testid="stSidebar"] .st-emotion-cache-16idsys {
+        padding: 0;
+    }
+    
+    /* ===== SIDEBAR BRAND ===== */
     .sidebar-brand {
         text-align: center;
-        padding: 1.5rem 0 1.2rem 0;
+        padding: 1.8rem 0 1.2rem 0;
         border-bottom: 1px solid rgba(255,255,255,0.06);
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
     
     .sidebar-brand .logo {
         font-size: 2.8rem;
         display: block;
+        margin-bottom: 0.2rem;
     }
     
     .sidebar-brand h2 {
         color: #ffffff;
-        margin: 0.3rem 0 0 0;
+        margin: 0;
         font-weight: 700;
         font-size: 1.2rem;
         letter-spacing: 0.5px;
@@ -68,43 +89,61 @@ st.markdown("""
         letter-spacing: 1px;
     }
     
-    /* ===== NAVIGATION ===== */
+    /* ===== NAVIGATION - PROFESSIONAL VERTICAL MENU ===== */
+    /* Hide default radio completely */
+    .stRadio {
+        margin: 0;
+        padding: 0;
+    }
+    
     .stRadio > div {
-        gap: 0.2rem;
+        gap: 0.1rem;
+        padding: 0.3rem 0.5rem;
     }
     
     .stRadio label {
         display: flex !important;
         align-items: center !important;
         gap: 0.8rem !important;
-        padding: 0.65rem 1rem !important;
+        padding: 0.6rem 1rem !important;
         margin: 0.15rem 0 !important;
         border-radius: 10px !important;
         background: transparent !important;
-        transition: all 0.25s ease !important;
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
         cursor: pointer !important;
         border: none !important;
         color: #9ca3af !important;
         font-weight: 500 !important;
         font-size: 0.9rem !important;
+        width: 100% !important;
+        position: relative !important;
     }
     
     .stRadio label:hover {
         background: rgba(255,255,255,0.06) !important;
         color: #ffffff !important;
+        transform: translateX(4px);
     }
     
+    /* Active state - Professional highlight with left accent bar */
     .stRadio label[data-checked="true"] {
-        background: rgba(79, 70, 229, 0.2) !important;
+        background: rgba(79, 70, 229, 0.15) !important;
         color: #ffffff !important;
         border-left: 3px solid #4f46e5 !important;
         border-radius: 0 10px 10px 0 !important;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.1) !important;
     }
     
     .stRadio label[data-checked="true"] .nav-icon {
         color: #4f46e5 !important;
     }
     
+    .stRadio label[data-checked="true"] .nav-text {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Hide the radio circle */
     .stRadio label > div:first-child {
         display: none !important;
     }
@@ -116,31 +155,62 @@ st.markdown("""
         gap: 0.8rem !important;
     }
     
+    /* Nav icon styling */
+    .nav-icon {
+        font-size: 1.2rem;
+        width: 1.8rem;
+        display: inline-block;
+        text-align: center;
+        color: #6b7280;
+        transition: color 0.25s ease;
+    }
+    
+    .nav-text {
+        color: #9ca3af;
+        transition: color 0.25s ease;
+    }
+    
+    /* Active nav text */
+    .nav-text.active {
+        color: #ffffff;
+        font-weight: 600;
+    }
+    
+    /* ===== SIDEBAR DIVIDER ===== */
+    .sidebar-divider {
+        border: none;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        margin: 0.8rem 1rem;
+    }
+    
     /* ===== SIDEBAR STATS ===== */
     .sidebar-stats {
         background: rgba(255,255,255,0.04);
         padding: 0.8rem 1rem;
         border-radius: 10px;
-        margin: 1.5rem 0.5rem;
+        margin: 0.8rem 0.5rem;
         border: 1px solid rgba(255,255,255,0.04);
     }
     
-    .sidebar-stats p {
+    .sidebar-stats .stats-label {
         color: #9ca3af;
         font-size: 0.6rem;
         margin: 0 0 0.4rem 0;
         text-transform: uppercase;
         letter-spacing: 1px;
+        font-weight: 600;
     }
     
-    .sidebar-stats .stat-value {
+    .sidebar-stats .stat-item {
         color: #e5e7eb;
-        font-size: 0.85rem;
-        margin: 0.1rem 0;
-        font-weight: 400;
+        font-size: 0.8rem;
+        margin: 0.2rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
     
-    .sidebar-stats .stat-value strong {
+    .sidebar-stats .stat-item strong {
         color: #ffffff;
         font-weight: 600;
     }
@@ -150,6 +220,7 @@ st.markdown("""
         font-weight: 600;
     }
     
+    /* ===== SIDEBAR FOOTER ===== */
     .sidebar-footer {
         text-align: center;
         color: #6b7280;
@@ -172,6 +243,7 @@ st.markdown("""
         margin-bottom: 2rem;
         border: 1px solid rgba(255,255,255,0.06);
         box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        margin-left: 280px;
     }
     
     .header-title {
@@ -260,7 +332,7 @@ st.markdown("""
     /* ===== SECTION HEADERS ===== */
     .section-header {
         font-size: 1.2rem;
-        font-weight: 600;
+        font-weight: 700;
         color: #111827;
         margin: 1.5rem 0 1rem 0;
         padding-bottom: 0.5rem;
@@ -294,7 +366,7 @@ st.markdown("""
         border-bottom: 2px solid #f3f4f6;
     }
     
-    /* ===== PREDICTOR INFO BOX - FIXED ===== */
+    /* ===== INFO BOX ===== */
     .info-box {
         background: #dbeafe !important;
         padding: 1rem 1.5rem !important;
@@ -306,33 +378,6 @@ st.markdown("""
     
     .info-box strong {
         color: #1e40af !important;
-    }
-    
-    /* ===== KPI TABLE STYLING ===== */
-    .kpi-table {
-        background: #ffffff;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-        overflow: hidden;
-    }
-    
-    .kpi-table th {
-        background: #1a1a2e !important;
-        color: #ffffff !important;
-        padding: 0.8rem 1rem !important;
-        font-weight: 600 !important;
-        font-size: 0.85rem !important;
-    }
-    
-    .kpi-table td {
-        padding: 0.7rem 1rem !important;
-        color: #1f2937 !important;
-        font-size: 0.85rem !important;
-        border-bottom: 1px solid #f3f4f6 !important;
-    }
-    
-    .kpi-table tr:hover td {
-        background: #f8fafc !important;
     }
     
     /* ===== RISK CARDS ===== */
@@ -483,6 +528,7 @@ st.markdown("""
         font-size: 0.7rem;
         border-top: 1px solid #e5e7eb;
         margin-top: 2rem;
+        margin-left: 280px;
     }
     
     .footer strong {
@@ -511,7 +557,7 @@ df = load_data()
 model = load_model()
 
 # ============================================
-# SIDEBAR - PROFESSIONAL NAVIGATION
+# SIDEBAR - PROFESSIONAL VERTICAL NAVIGATION
 # ============================================
 with st.sidebar:
     # Brand
@@ -523,20 +569,24 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    # Navigation
+    # Navigation - Professional vertical menu
     nav_options = ["Overview", "Analysis", "Predictor", "Models", "Insights"]
     nav_icons = ["🏠", "📈", "🔮", "📊", "💡"]
     
+    # Create the radio with formatted labels
     page_index = st.radio(
         label="Navigation",
         options=range(len(nav_options)),
-        format_func=lambda i: f"{nav_icons[i]} {nav_options[i]}",
+        format_func=lambda i: f'<span class="nav-icon">{nav_icons[i]}</span><span class="nav-text">{nav_options[i]}</span>',
         index=0,
         key="nav_radio",
         label_visibility="collapsed"
     )
     page = nav_options[page_index]
-
+    
+    # Divider
+    st.markdown('<hr class="sidebar-divider">', unsafe_allow_html=True)
+    
     # Dataset Stats
     total = len(df)
     churned = df[df['Churn'] == 'Yes'].shape[0]
@@ -544,10 +594,10 @@ with st.sidebar:
     
     st.markdown(f"""
     <div class="sidebar-stats">
-        <p>📊 Dataset Snapshot</p>
-        <div class="stat-value">Total: <strong>{total:,}</strong></div>
-        <div class="stat-value">Churned: <strong>{churned:,}</strong></div>
-        <div class="stat-value">Rate: <strong class="stat-highlight">{churn_rate:.1f}%</strong></div>
+        <div class="stats-label">📊 Dataset Snapshot</div>
+        <div class="stat-item">Total <strong>{total:,}</strong></div>
+        <div class="stat-item">Churned <strong>{churned:,}</strong></div>
+        <div class="stat-item">Rate <strong class="stat-highlight">{churn_rate:.1f}%</strong></div>
     </div>
     """, unsafe_allow_html=True)
     
@@ -741,39 +791,56 @@ if page == "Overview":
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# PAGE: ANALYSIS
+# PAGE: ANALYSIS - WITH STANDARD DROPDOWN FILTERS
 # ============================================
 elif page == "Analysis":
     st.markdown('<div class="section-header">🔍 <span class="highlight">Churn Analysis</span></div>', unsafe_allow_html=True)
     
+    # Filter Section - Professional layout
+    st.markdown("### 📋 Filter Data")
+    
     col1, col2, col3 = st.columns(3)
+    
     with col1:
+        st.markdown("**Contract Type**")
         contracts = st.multiselect(
-            "Contract Type",
+            "Select contract types",
             options=df['Contract'].unique(),
             default=df['Contract'].unique(),
-            key='contract_filter'
-        )
-    with col2:
-        genders = st.multiselect(
-            "Gender",
-            options=df['gender'].unique(),
-            default=df['gender'].unique(),
-            key='gender_filter'
-        )
-    with col3:
-        internet = st.multiselect(
-            "Internet Service",
-            options=df['InternetService'].unique(),
-            default=df['InternetService'].unique(),
-            key='internet_filter'
+            key='contract_filter',
+            placeholder="Choose contract types..."
         )
     
+    with col2:
+        st.markdown("**Gender**")
+        genders = st.multiselect(
+            "Select gender",
+            options=df['gender'].unique(),
+            default=df['gender'].unique(),
+            key='gender_filter',
+            placeholder="Choose gender..."
+        )
+    
+    with col3:
+        st.markdown("**Internet Service**")
+        internet = st.multiselect(
+            "Select internet service",
+            options=df['InternetService'].unique(),
+            default=df['InternetService'].unique(),
+            key='internet_filter',
+            placeholder="Choose internet service..."
+        )
+    
+    # Filter data
     filtered_df = df[
         (df['Contract'].isin(contracts)) &
         (df['gender'].isin(genders)) &
         (df['InternetService'].isin(internet))
     ]
+    
+    # Filtered Stats
+    st.markdown("---")
+    st.markdown("### 📊 Filtered Results")
     
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -858,7 +925,7 @@ elif page == "Analysis":
         st.markdown('</div>', unsafe_allow_html=True)
 
 # ============================================
-# PAGE: PREDICTOR - FIXED INFO BOX
+# PAGE: PREDICTOR
 # ============================================
 elif page == "Predictor":
     st.markdown('<div class="section-header">🔮 <span class="highlight">Churn Predictor</span></div>', unsafe_allow_html=True)
@@ -1038,7 +1105,7 @@ elif page == "Models":
         st.info("ℹ️ Feature importance data not available. Run the notebook first to generate this chart.")
 
 # ============================================
-# PAGE: INSIGHTS - FIXED KPI TABLE
+# PAGE: INSIGHTS
 # ============================================
 elif page == "Insights":
     st.markdown('<div class="section-header">💡 <span class="highlight">Business Insights & Recommendations</span></div>', unsafe_allow_html=True)
@@ -1084,7 +1151,6 @@ elif page == "Insights":
     
     st.markdown("### 📊 Key Metrics to Monitor")
     
-    # Using st.dataframe with explicit styling for visibility
     kpi_data = pd.DataFrame({
         'Metric': [
             "📊 Monthly churn rate by contract type",
@@ -1106,7 +1172,6 @@ elif page == "Insights":
         ]
     })
     
-    # Apply custom styling to the dataframe
     st.dataframe(
         kpi_data.style
             .set_properties(**{
