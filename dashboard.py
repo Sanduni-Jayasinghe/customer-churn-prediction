@@ -138,7 +138,6 @@ st.markdown("""
     }
     .info-box strong { color: #1e40af !important; }
 
-    /* ===== RISK CARDS ===== */
     .risk-card {
         padding: 0.7rem 1.2rem; border-radius: 10px; margin: 0.4rem 0; border-left: 4px solid;
         display: flex; justify-content: space-between; align-items: center; background: #fafafa;
@@ -492,4 +491,273 @@ elif page == "Models":
     st.markdown('<div class="section-header">📊 <span class="highlight">Model Performance</span></div>', unsafe_allow_html=True)
     col1, col2, col3, col4 = st.columns(4)
     models = [
-        {"name": "Logistic Regression", "roc": 0.8414, "pr": 0.630
+        {"name": "Logistic Regression", "roc": 0.8414, "pr": 0.6306},
+        {"name": "Random Forest", "roc": 0.8411, "pr": 0.6538, "best": True},
+        {"name": "XGBoost", "roc": 0.8369, "pr": 0.6477},
+        {"name": "XGBoost (Tuned)", "roc": 0.8430, "pr": 0.6512}
+    ]
+    cols = [col1, col2, col3, col4]
+    for i, model_info in enumerate(models):
+        with cols[i]:
+            best_badge = '<div class="best-badge">🏆 Best</div>' if model_info.get('best') else ''
+            st.markdown(f"""<div class="model-card"><p class="model-name">{model_info['name']}</p><p class="model-score">{model_info['roc']:.4f}</p><p class="model-label">ROC-AUC</p><p style="font-size: 0.7rem; color: #6b7280; margin: 0.2rem 0;">PR-AUC: {model_info['pr']:.4f}</p>{best_badge}</div>""", unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown('<div class="chart-card"><h4>📊 Model Performance Comparison</h4>', unsafe_allow_html=True)
+    model_data = pd.DataFrame(models)
+    fig = px.bar(model_data, x='name', y=['roc', 'pr'], barmode='group', text_auto='.3f',
+                 color_discrete_map={'roc': '#4f46e5', 'pr': '#7c3aed'}, template='plotly_dark', height=350,
+                 title="ROC-AUC vs PR-AUC Comparison")
+    fig.update_layout(margin=dict(t=40, b=30), legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1), yaxis_title="Score", xaxis_title="")
+    fig.update_traces(textfont=dict(color='#f9fafb', size=12))
+    style_fig(fig)
+    st.plotly_chart(fig, use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown('<div class="section-header">🔑 <span class="highlight">Top Features Driving Churn</span></div>', unsafe_allow_html=True)
+    try:
+        rf_importance = pd.read_csv("outputs/feature_importance_rf.csv", index_col=0)
+        rf_importance = rf_importance.sort_values(by=rf_importance.columns[0], ascending=True).tail(15)
+        fig = px.bar(rf_importance, x=rf_importance.columns[0], y=rf_importance.index, orientation='h',
+                     color=rf_importance.columns[0], color_continuous_scale='Blues', template='plotly_dark', height=450,
+                     title="Random Forest Feature Importance")
+        fig.update_layout(margin=dict(t=40, b=30, l=0, r=0), xaxis_title="Importance", yaxis_title="", showlegend=False)
+        style_fig(fig)
+        st.plotly_chart(fig, use_container_width=True)
+    except Exception:
+        st.info("ℹ️ Feature importance data not available. Run the notebook first to generate this chart.")
+
+# ============================================
+# PAGE: INSIGHTS
+# ============================================
+elif page == "Insights":
+    st.markdown('<div class="section-header">💡 <span class="highlight">Business Insights & Recommendations</span></div>', unsafe_allow_html=True)
+    
+    # High-Risk Customer Segments
+    st.markdown("### 🔴 High-Risk Customer Segments")
+    risks = [
+        {"level": "Critical", "segment": "Month-to-month + Monthly charges > $70", "action": "Immediate retention offer", "class": "risk-critical"},
+        {"level": "High", "segment": "New customers (tenure < 6 months)", "action": "Welcome program", "class": "risk-high"},
+        {"level": "Medium", "segment": "Fiber optic internet customers", "action": "Bundle services", "class": "risk-medium"},
+        {"level": "Low", "segment": "Electronic check payment method", "action": "Auto-pay incentive", "class": "risk-low"}
+    ]
+    for risk in risks:
+        st.markdown(f"""<div class="risk-card {risk['class']}"><span class="risk-level">{risk['level']}</span><span class="risk-segment">{risk['segment']}</span><span class="risk-action">{risk['action']}</span></div>""", unsafe_allow_html=True)
+
+    st.markdown("---")
+    
+    # Recommended Retention Strategies
+    st.markdown("### ✅ Recommended Retention Strategies")
+    strategies = [
+        "💎 Offer annual contract discounts to month-to-month customers",
+        "🎯 Implement 'welcome' retention program for first 6 months",
+        "📦 Bundle high-speed internet with streaming services",
+        "💳 Incentivize electronic check customers to switch to auto-pay"
+    ]
+    for i, strategy in enumerate(strategies, 1):
+        st.markdown(f"""<div class="strategy-card"><div class="strategy-number">{i}</div><div class="strategy-text">{strategy}</div></div>""", unsafe_allow_html=True)
+
+    st.markdown("---")
+    
+    # Key Metrics to Monitor
+    st.markdown("### 📊 Key Metrics to Monitor")
+
+    kpi_data = pd.DataFrame({
+        'Metric': [
+            "📊 Monthly churn rate by contract type", 
+            "🎯 Churn rate at tenure milestones", 
+            "⭐ Customer satisfaction scores (high-risk)", 
+            "📈 Retention campaign conversion rate"
+        ],
+        'Target': [
+            "< 15% for month-to-month", 
+            "< 20% at 3 months", 
+            "> 4.0/5.0", 
+            "> 25%"
+        ],
+        'Status': [
+            "🟢 On Track", 
+            "🟡 Monitor", 
+            "🟢 On Track", 
+            "🟡 Monitor"
+        ]
+    })
+
+    styled_table = kpi_data.style.set_table_styles([
+        {
+            'selector': 'thead th',
+            'props': [
+                ('background-color', '#1a1a2e'),
+                ('color', '#ffffff'),
+                ('font-weight', '700'),
+                ('padding', '14px 18px'),
+                ('text-align', 'left'),
+                ('border', '2px solid #4f46e5'),
+                ('font-size', '14px'),
+                ('text-transform', 'uppercase'),
+                ('letter-spacing', '0.5px')
+            ]
+        },
+        {
+            'selector': 'td',
+            'props': [
+                ('padding', '12px 16px'),
+                ('border', '1px solid #d1d5db'),
+                ('font-size', '13px'),
+                ('color', '#1f2937')
+            ]
+        },
+        {
+            'selector': 'tbody tr:nth-child(even)',
+            'props': [('background-color', '#f8fafc')]
+        },
+        {
+            'selector': 'tbody tr:nth-child(odd)',
+            'props': [('background-color', '#ffffff')]
+        },
+        {
+            'selector': 'tbody tr:hover',
+            'props': [
+                ('background-color', '#eef2ff'),
+                ('box-shadow', '0 2px 8px rgba(79, 70, 229, 0.15)'),
+                ('transition', 'all 0.3s ease')
+            ]
+        },
+        {
+            'selector': 'table',
+            'props': [
+                ('border-collapse', 'collapse'),
+                ('border', '2px solid #4f46e5'),
+                ('border-radius', '12px'),
+                ('overflow', 'hidden'),
+                ('box-shadow', '0 4px 20px rgba(0,0,0,0.08)'),
+                ('width', '100%')
+            ]
+        }
+    ])
+
+    styled_table = styled_table.set_properties(
+        subset=['Metric'],
+        **{'font-weight': '600', 'color': '#1a1a2e'}
+    )
+    
+    styled_table = styled_table.set_properties(
+        subset=['Target'],
+        **{'color': '#4b5563', 'font-weight': '500'}
+    )
+    
+    styled_table = styled_table.set_properties(
+        subset=['Status'],
+        **{'font-weight': '700'}
+    )
+
+    st.dataframe(
+        styled_table,
+        use_container_width=True, 
+        hide_index=True
+    )
+    
+    st.caption("📌 *Hover over rows for details • Click to highlight row*")
+
+    # Status Legend
+    st.markdown("---")
+    st.markdown("### 📊 Status Legend")
+    
+    legend_col1, legend_col2, legend_col3 = st.columns(3)
+    
+    with legend_col1:
+        st.markdown("""
+        <div style="display: flex; align-items: center; gap: 10px; background: #f0fdf4; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #22c55e;">
+            <span style="font-size: 1.2rem;">🟢</span>
+            <span style="font-weight: 600; color: #065f46;">On Track</span>
+            <span style="color: #6b7280; font-size: 0.8rem;">- Good performance</span>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with legend_col2:
+        st.markdown("""
+        <div style="display: flex; align-items: center; gap: 10px; background: #fffbeb; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+            <span style="font-size: 1.2rem;">🟡</span>
+            <span style="font-weight: 600; color: #92400e;">Monitor</span>
+            <span style="color: #6b7280; font-size: 0.8rem;">- Needs attention</span>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    with legend_col3:
+        st.markdown("""
+        <div style="display: flex; align-items: center; gap: 10px; background: #fef2f2; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #dc2626;">
+            <span style="font-size: 1.2rem;">🔴</span>
+            <span style="font-weight: 600; color: #991b1b;">Critical</span>
+            <span style="color: #6b7280; font-size: 0.8rem;">- Immediate action</span>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Export KPI Data
+    st.markdown("---")
+    st.markdown("### 📥 Export KPI Data")
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        csv = kpi_data.to_csv(index=False)
+        st.download_button(
+            label="📊 Download KPI Data (CSV)",
+            data=csv,
+            file_name="kpi_metrics.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+
+    # Download Report
+    st.markdown("---")
+    st.markdown("### 📥 Download Full Report")
+    
+    report_text = """
+BUSINESS RECOMMENDATIONS REPORT
+================================
+
+HIGHEST RISK CUSTOMER SEGMENTS:
+1. Month-to-month contracts with high monthly charges (>$70)
+2. New customers (tenure < 6 months)
+3. Fiber optic internet customers
+4. Electronic check payment method
+
+RECOMMENDED RETENTION STRATEGIES:
+1. Offer annual contract discounts to month-to-month customers
+2. Implement 'welcome' retention program for first 6 months
+3. Bundle high-speed internet with streaming services
+4. Incentivize electronic check customers to switch to auto-pay
+
+KEY METRICS TO MONITOR:
+- Monthly churn rate by contract type
+- Churn rate at tenure milestones
+- Customer satisfaction scores for high-risk segments
+- Retention campaign conversion rate
+
+MODEL PERFORMANCE:
+- Best Model: Random Forest (ROC-AUC: 0.841)
+- Precision (Churn): 0.53
+- Recall (Churn): 0.77
+- F1-Score (Churn): 0.63
+"""
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        st.download_button(
+            label="📥 Download Report (TXT)", 
+            data=report_text, 
+            file_name="business_recommendations.txt", 
+            mime="text/plain", 
+            use_container_width=True
+        )
+
+# ============================================
+# FOOTER
+# ============================================
+st.markdown("""
+<div class="footer">
+    <p><strong>Customer Churn Prediction Dashboard</strong> • Built with Streamlit & Python</p>
+    <p>Data Source: IBM Telco Customer Churn Dataset • 7,043 Customers</p>
+    <p style="margin-top: 0.3rem; opacity: 0.6;">© 2024 Churn Analytics • All Rights Reserved</p>
+</div>
+""", unsafe_allow_html=True)
