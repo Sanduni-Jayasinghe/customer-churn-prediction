@@ -29,17 +29,28 @@ customer-churn-prediction/
 
 
 ## 🚀 Models Compared
-|      Model          | ROC-AUC | PR-AUC |
-|---------------------|---------|--------|
-| Logistic Regression | ~0.84   | ~0.63  |
-| Random Forest       | ~0.84   | ~0.65  |
-| XGBoost (Tuned)     | ~0.84   | ~0.65  |
+|      Model          | ROC-AUC  | PR-AUC  |
+|---------------------|----------|---------|
+| Logistic Regression | ~0.839   | ~0.655  |
+| Random Forest       | ~0.829   | ~0.632  |
+| XGBoost (Tuned)     | ~0.834   | ~0.636  |
+
+## 📈 Performance Metrics
+|          Metric           | Best Model          | Score |
+|---------------------------|---------------------|-------|
+| **ROC-AUC**               | Logistic Regression | 0.839 |
+| **PR-AUC**                | Logistic Regression | 0.655 |
+| **F1-Score (Churn)**      | Tuned XGBoost       | 0.616 |
+| **Recall (Churn)**        | Random Forest       | 0.77  |
+| **Precision (Churn)**     | Tuned XGBoost       | 0.54  |
+| **Optimal Threshold**     | Validation Set      | 0.583 |
 
 ## 💡 Key Business Insights
 1. **Highest Risk Segment**: Month-to-month contracts with high monthly charges (>$70)
 2. **Critical Period**: New customers (tenure < 6 months) need immediate retention focus
 3. **Service Risk**: Fiber optic internet customers show higher churn rates
 4. **Payment Method**: Electronic check payment method correlates with higher churn
+5. **Top Churn Drivers**: Tenure, Contract Type, Monthly Charges, Total Charges, Internet Service
 
 ## 🔧 Recommended Retention Strategies
 1. Offer annual contract discounts to month-to-month customers
@@ -48,10 +59,11 @@ customer-churn-prediction/
 4. Incentivize electronic check customers to switch to auto-pay
 
 ## 📈 Performance Metrics
-- **Best Model**: Random Forest (ROC-AUC: 0.84)
-- **Precision (Churn)**: 0.53
-- **Recall (Churn)**: 0.77
-- **F1-Score (Churn)**: 0.63
+- **Best Model by ROC-AUC**: Logistic Regression (0.839)
+- **Best for Recall**: Random Forest (0.77 recall)
+- **Precision (Churn)**: 0.54
+- **Recall (Churn)**: 0.72 (Tuned XGBoost)
+- **F1-Score (Churn)**: 0.62 (Tuned XGBoost)
 
 ## 🛠️ Technologies Used
 - Python 3.x
@@ -60,6 +72,7 @@ customer-churn-prediction/
 - XGBoost (Gradient Boosting)
 - SHAP (Model Interpretability)
 - Matplotlib, Seaborn (Visualization)
+- Streamlit (Web Dashboard)
 - Jupyter Notebook (Development)
 
 ## 📊 Visualizations
