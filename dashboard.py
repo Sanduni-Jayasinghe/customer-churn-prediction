@@ -514,11 +514,13 @@ elif page == "Predictor":
 elif page == "Models":
     st.markdown('<div class="section-header">📊 <span class="highlight">Model Performance</span></div>', unsafe_allow_html=True)
     col1, col2, col3, col4 = st.columns(4)
+    # Corrected, leak-free metrics from the train/validation/test split
+    # (threshold selected on validation, evaluated once on the held-out test set)
     models = [
-        {"name": "Logistic Regression", "roc": 0.8414, "pr": 0.6306},
-        {"name": "Random Forest", "roc": 0.8411, "pr": 0.6538, "best": True},
-        {"name": "XGBoost", "roc": 0.8369, "pr": 0.6477},
-        {"name": "XGBoost (Tuned)", "roc": 0.8430, "pr": 0.6512}
+        {"name": "Logistic Regression", "roc": 0.8389, "pr": 0.6552, "best": True},
+        {"name": "Random Forest", "roc": 0.8289, "pr": 0.6318},
+        {"name": "XGBoost", "roc": 0.8175, "pr": 0.6143},
+        {"name": "XGBoost (Tuned)", "roc": 0.8339, "pr": 0.6357}
     ]
     cols = [col1, col2, col3, col4]
     for i, model_info in enumerate(models):
@@ -663,9 +665,10 @@ KEY METRICS TO MONITOR:
 - Customer satisfaction scores for high-risk segments
 - Retention campaign conversion rate
 
-MODEL PERFORMANCE:
-- Best Model: Random Forest (ROC-AUC: 0.841)
-- Precision (Churn): 0.53
+MODEL PERFORMANCE (train/validation/test split, no leakage):
+- Best Model: Logistic Regression (ROC-AUC: 0.839, PR-AUC: 0.655)
+- XGBoost (Tuned): ROC-AUC 0.834, PR-AUC 0.636, F1 0.616
+- Precision (Churn): 0.54
 - Recall (Churn): 0.77
 - F1-Score (Churn): 0.63
 """
