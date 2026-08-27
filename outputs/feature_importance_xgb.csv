@@ -1,16 +1,16 @@
 ,0
-Contract_Month-to-month,0.6250183
-InternetService_Fiber optic,0.12557465
-InternetService_No,0.027116371
-Contract_One year,0.01626513
-Contract_Two year,0.01594112
-StreamingMovies_Yes,0.014330021
-tenure,0.012699827
-PaymentMethod_Electronic check,0.011739741
-PhoneService,0.009562557
-TenureGroup_1-2 years,0.008483361
-OnlineSecurity_Yes,0.008412773
-NumServices,0.007858509
-PaperlessBilling,0.007837453
-MonthlyCharges,0.0075075557
-AvgMonthlyCharges,0.007349472
+Contract_Month-to-month,0.53780675
+InternetService_Fiber optic,0.18571997
+InternetService_No,0.026576681
+Contract_One year,0.019897824
+StreamingMovies_Yes,0.01594165
+PaymentMethod_Electronic check,0.013557599
+tenure,0.01278567
+Contract_Two year,0.012687806
+OnlineSecurity_Yes,0.010713446
+TotalCharges,0.009715561
+TechSupport_Yes,0.009407518
+AvgMonthlyCharges,0.009397491
+OnlineBackup_Yes,0.009343198
+TenureGroup_1-2 years,0.009307209
+PhoneService,0.009304004
