@@ -54,12 +54,12 @@ st.markdown("""
     }
     .sidebar-brand p { color: #6b7280; font-size: 0.7rem; margin: 0.1rem 0 0 0; letter-spacing: 1px; }
 
-    .stRadio > div { gap: 0.2rem; }
+    .stRadio > div { gap: 0.3rem; }
     .stRadio label {
-        display: flex !important; align-items: center !important; gap: 0.8rem !important;
-        padding: 0.8rem 1.2rem !important; margin: 0.15rem 0 !important; border-radius: 10px !important;
+        display: flex !important; align-items: center !important; gap: 0.9rem !important;
+        padding: 0.9rem 1.2rem !important; margin: 0.15rem 0 !important; border-radius: 10px !important;
         background: transparent !important; transition: all 0.25s ease !important; cursor: pointer !important;
-        border: none !important; color: #9ca3af !important; font-weight: 500 !important; font-size: 1.3rem !important; letter-spacing: 0.5px !important;
+        border: none !important; color: #9ca3af !important; font-weight: 600 !important; font-size: 1.5rem !important; letter-spacing: 0.5px !important;
     }
     .stRadio label:hover { background: rgba(255,255,255,0.06) !important; color: #ffffff !important; }
     .stRadio label[data-checked="true"] {
@@ -68,7 +68,7 @@ st.markdown("""
     }
     .stRadio label[data-checked="true"] .nav-icon { color: #4f46e5 !important; }
     .stRadio label > div:first-child { display: none !important; }
-    .stRadio label > div:last-child { flex: 1; display: flex !important; align-items: center !important; gap: 0.8rem !important; }
+    .stRadio label > div:last-child { flex: 1; display: flex !important; align-items: center !important; gap: 0.9rem !important; }
 
     .sidebar-stats {
         background: rgba(255,255,255,0.04); padding: 0.8rem 1rem; border-radius: 10px;
@@ -184,6 +184,30 @@ st.markdown("""
         display: inline-block; background: #d1fae5; color: #065f46 !important; font-size: 0.55rem;
         padding: 0.1rem 0.6rem; border-radius: 12px; font-weight: 600; margin-top: 0.2rem;
     }
+
+    /* ===== KPI TABLE (real HTML table, not a pandas Styler passed to
+       st.dataframe — Streamlit's dataframe component ignores most of that
+       CSS, which is why the header kept looking unstyled no matter what
+       colors were set on it). Full borders on every cell + header, as
+       requested. ===== */
+    .kpi-table-wrap { overflow-x: auto; border-radius: 12px; border: 2px solid #4f46e5; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .kpi-table { width: 100%; border-collapse: collapse; background: #ffffff; }
+    .kpi-table th {
+        background: #1a1a2e; color: #ffffff !important; padding: 14px 18px; text-align: left;
+        font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;
+        border: 1px solid #4f46e5;
+    }
+    .kpi-table td { padding: 12px 16px; font-size: 0.85rem; color: #1f2937 !important; border: 1px solid #d1d5db; }
+    .kpi-table tbody tr:nth-child(even) { background: #f8fafc; }
+    .kpi-table tbody tr:nth-child(odd) { background: #ffffff; }
+    .kpi-table tbody tr:hover td { background: #eef2ff; }
+    .kpi-table .metric-cell { font-weight: 600; color: #1a1a2e !important; }
+    .kpi-table .target-cell { color: #4b5563 !important; font-weight: 500; }
+    .kpi-status-pill {
+        display: inline-block; padding: 0.2rem 0.7rem; border-radius: 20px; font-weight: 700; font-size: 0.78rem;
+    }
+    .kpi-status-ontrack { background: #d1fae5; color: #065f46 !important; }
+    .kpi-status-monitor { background: #fef3c7; color: #92400e !important; }
 
     .footer {
         text-align: center; padding: 1.2rem 0 0.5rem 0; color: #9ca3af; font-size: 0.7rem;
@@ -533,7 +557,7 @@ elif page == "Models":
 # ============================================
 elif page == "Insights":
     st.markdown('<div class="section-header">💡 <span class="highlight">Business Insights & Recommendations</span></div>', unsafe_allow_html=True)
-    
+
     # High-Risk Customer Segments
     st.markdown("### 🔴 High-Risk Customer Segments")
     risks = [
@@ -546,7 +570,7 @@ elif page == "Insights":
         st.markdown(f"""<div class="risk-card {risk['class']}"><span class="risk-level">{risk['level']}</span><span class="risk-segment">{risk['segment']}</span><span class="risk-action">{risk['action']}</span></div>""", unsafe_allow_html=True)
 
     st.markdown("---")
-    
+
     # Recommended Retention Strategies
     st.markdown("### ✅ Recommended Retention Strategies")
     strategies = [
@@ -559,150 +583,55 @@ elif page == "Insights":
         st.markdown(f"""<div class="strategy-card"><div class="strategy-number">{i}</div><div class="strategy-text">{strategy}</div></div>""", unsafe_allow_html=True)
 
     st.markdown("---")
-    
-    # Key Metrics to Monitor
+
+    # Key Metrics to Monitor — real HTML table now (fixes the header visibility
+    # for good, since st.dataframe + pandas Styler never actually applied
+    # custom CSS reliably). Status is shown as a colored pill, which also makes
+    # a separate "Status Legend" section unnecessary — the color + label is
+    # already self-explanatory right in the table.
     st.markdown("### 📊 Key Metrics to Monitor")
 
-    kpi_data = pd.DataFrame({
-        'Metric': [
-            "📊 Monthly churn rate by contract type", 
-            "🎯 Churn rate at tenure milestones", 
-            "⭐ Customer satisfaction scores (high-risk)", 
-            "📈 Retention campaign conversion rate"
-        ],
-        'Target': [
-            "< 15% for month-to-month", 
-            "< 20% at 3 months", 
-            "> 4.0/5.0", 
-            "> 25%"
-        ],
-        'Status': [
-            "🟢 On Track", 
-            "🟡 Monitor", 
-            "🟢 On Track", 
-            "🟡 Monitor"
-        ]
-    })
+    kpi_rows = [
+        {"metric": "📊 Monthly churn rate by contract type", "target": "< 15% for month-to-month", "status": "On Track", "pill": "kpi-status-ontrack"},
+        {"metric": "🎯 Churn rate at tenure milestones", "target": "< 20% at 3 months", "status": "Monitor", "pill": "kpi-status-monitor"},
+        {"metric": "⭐ Customer satisfaction scores (high-risk)", "target": "> 4.0 / 5.0", "status": "On Track", "pill": "kpi-status-ontrack"},
+        {"metric": "📈 Retention campaign conversion rate", "target": "> 25%", "status": "Monitor", "pill": "kpi-status-monitor"},
+    ]
 
-    styled_table = kpi_data.style.set_table_styles([
-        {
-            'selector': 'thead th',
-            'props': [
-                ('background-color', '#1a1a2e'),
-                ('color', '#ffffff'),
-                ('font-weight', '700'),
-                ('padding', '14px 18px'),
-                ('text-align', 'left'),
-                ('border', '2px solid #4f46e5'),
-                ('font-size', '14px'),
-                ('text-transform', 'uppercase'),
-                ('letter-spacing', '0.5px')
-            ]
-        },
-        {
-            'selector': 'td',
-            'props': [
-                ('padding', '12px 16px'),
-                ('border', '1px solid #d1d5db'),
-                ('font-size', '13px'),
-                ('color', '#1f2937')
-            ]
-        },
-        {
-            'selector': 'tbody tr:nth-child(even)',
-            'props': [('background-color', '#f8fafc')]
-        },
-        {
-            'selector': 'tbody tr:nth-child(odd)',
-            'props': [('background-color', '#ffffff')]
-        },
-        {
-            'selector': 'tbody tr:hover',
-            'props': [
-                ('background-color', '#eef2ff'),
-                ('box-shadow', '0 2px 8px rgba(79, 70, 229, 0.15)'),
-                ('transition', 'all 0.3s ease')
-            ]
-        },
-        {
-            'selector': 'table',
-            'props': [
-                ('border-collapse', 'collapse'),
-                ('border', '2px solid #4f46e5'),
-                ('border-radius', '12px'),
-                ('overflow', 'hidden'),
-                ('box-shadow', '0 4px 20px rgba(0,0,0,0.08)'),
-                ('width', '100%')
-            ]
-        }
-    ])
-
-    styled_table = styled_table.set_properties(
-        subset=['Metric'],
-        **{'font-weight': '600', 'color': '#1a1a2e'}
-    )
-    
-    styled_table = styled_table.set_properties(
-        subset=['Target'],
-        **{'color': '#4b5563', 'font-weight': '500'}
-    )
-    
-    styled_table = styled_table.set_properties(
-        subset=['Status'],
-        **{'font-weight': '700'}
+    table_rows_html = "".join(
+        f"""<tr>
+            <td class="metric-cell">{r['metric']}</td>
+            <td class="target-cell">{r['target']}</td>
+            <td><span class="kpi-status-pill {r['pill']}">{r['status']}</span></td>
+        </tr>"""
+        for r in kpi_rows
     )
 
-    st.dataframe(
-        styled_table,
-        use_container_width=True, 
-        hide_index=True
-    )
-    
-    st.caption("📌 *Hover over rows for details • Click to highlight row*")
+    st.markdown(f"""
+    <div class="kpi-table-wrap">
+        <table class="kpi-table">
+            <thead>
+                <tr><th>Metric</th><th>Target</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                {table_rows_html}
+            </tbody>
+        </table>
+    </div>
+    """, unsafe_allow_html=True)
 
-    # Status Legend
-    st.markdown("---")
-    st.markdown("### 📊 Status Legend")
-    
-    legend_col1, legend_col2, legend_col3 = st.columns(3)
-    
-    with legend_col1:
-        st.markdown("""
-        <div style="display: flex; align-items: center; gap: 10px; background: #f0fdf4; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #22c55e;">
-            <span style="font-size: 1.2rem;">🟢</span>
-            <span style="font-weight: 600; color: #065f46;">On Track</span>
-            <span style="color: #6b7280; font-size: 0.8rem;">- Good performance</span>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with legend_col2:
-        st.markdown("""
-        <div style="display: flex; align-items: center; gap: 10px; background: #fffbeb; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
-            <span style="font-size: 1.2rem;">🟡</span>
-            <span style="font-weight: 600; color: #92400e;">Monitor</span>
-            <span style="color: #6b7280; font-size: 0.8rem;">- Needs attention</span>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with legend_col3:
-        st.markdown("""
-        <div style="display: flex; align-items: center; gap: 10px; background: #fef2f2; padding: 10px 15px; border-radius: 8px; border-left: 4px solid #dc2626;">
-            <span style="font-size: 1.2rem;">🔴</span>
-            <span style="font-weight: 600; color: #991b1b;">Critical</span>
-            <span style="color: #6b7280; font-size: 0.8rem;">- Immediate action</span>
-        </div>
-        """, unsafe_allow_html=True)
+    st.caption("📌 Hover over a row to highlight it")
 
     # Export KPI Data
     st.markdown("---")
     st.markdown("### 📥 Export KPI Data")
-    
+
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        csv = kpi_data.to_csv(index=False)
+        kpi_csv = pd.DataFrame([{"Metric": r["metric"], "Target": r["target"], "Status": r["status"]} for r in kpi_rows]).to_csv(index=False)
         st.download_button(
             label="📊 Download KPI Data (CSV)",
-            data=csv,
+            data=kpi_csv,
             file_name="kpi_metrics.csv",
             mime="text/csv",
             use_container_width=True
@@ -711,7 +640,7 @@ elif page == "Insights":
     # Download Report
     st.markdown("---")
     st.markdown("### 📥 Download Full Report")
-    
+
     report_text = """
 BUSINESS RECOMMENDATIONS REPORT
 ================================
@@ -740,14 +669,14 @@ MODEL PERFORMANCE:
 - Recall (Churn): 0.77
 - F1-Score (Churn): 0.63
 """
-    
+
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.download_button(
-            label="📥 Download Report (TXT)", 
-            data=report_text, 
-            file_name="business_recommendations.txt", 
-            mime="text/plain", 
+            label="📥 Download Report (TXT)",
+            data=report_text,
+            file_name="business_recommendations.txt",
+            mime="text/plain",
             use_container_width=True
         )
 
