@@ -214,10 +214,17 @@ st.markdown("""
 # WHITE paper background guarantees the dark text stays visible regardless
 # of which theme the app runs under.
 # ============================================
-CHART_FONT = dict(color='#1f2937', size=12)
+CHART_FONT = dict(color='#e5e7eb', size=12)  # light gray-white, legible on the dark theme
 
 def style_fig(fig, height=None):
-    fig.update_layout(paper_bgcolor='#ffffff', plot_bgcolor='#ffffff', font=CHART_FONT)
+    # Transparent canvas blends with the app's dark background; plotly_dark
+    # template gives correctly-colored gridlines/axes for a dark canvas.
+    fig.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=CHART_FONT,
+        template='plotly_dark',
+    )
     if height:
         fig.update_layout(height=height)
     return fig
@@ -326,16 +333,16 @@ if page == "Overview":
             labels=['✅ No Churn', '⚠️ Churn'],
             values=churn_counts.values,
             hole=0.5,
-            marker=dict(colors=['#22c55e', '#dc2626'], line=dict(color='#ffffff', width=2)),
+            marker=dict(colors=['#22c55e', '#dc2626'], line=dict(color='#1a1a2e', width=2)),
             textinfo='label+percent',
             textposition='outside',
-            textfont=dict(size=14, color='#1f2937'),
+            textfont=dict(size=14, color='#f9fafb'),
             pull=[0, 0.05],
             showlegend=False
         )])
         fig.update_layout(
             height=340, margin=dict(t=20, b=20, l=20, r=20),
-            annotations=[dict(text=f'Total: {len(df):,} Customers', x=0.5, y=-0.08, font=dict(size=13, color='#6b7280'), showarrow=False)]
+            annotations=[dict(text=f'Total: {len(df):,} Customers', x=0.5, y=-0.08, font=dict(size=13, color='#cbd5e1'), showarrow=False)]
         )
         style_fig(fig)
         st.plotly_chart(fig, use_container_width=True)
@@ -347,8 +354,8 @@ if page == "Overview":
         contract_churn.columns = ['Contract', 'Churn Rate']
         fig = px.bar(contract_churn, x='Contract', y='Churn Rate', color='Churn Rate',
                      color_continuous_scale=['#22c55e', '#f59e0b', '#dc2626'],
-                     text=contract_churn['Churn Rate'].round(1), template='plotly_white', height=340)
-        fig.update_traces(textposition='outside', marker_line_width=0, textfont=dict(size=13, color='#1f2937'))
+                     text=contract_churn['Churn Rate'].round(1), template='plotly_dark', height=340)
+        fig.update_traces(textposition='outside', marker_line_width=0, textfont=dict(size=13, color='#f9fafb'))
         fig.update_layout(showlegend=False, margin=dict(t=10, b=30, l=10, r=10), xaxis_title="", yaxis_title="Churn Rate (%)",
                            yaxis=dict(range=[0, max(contract_churn['Churn Rate']) * 1.15]))
         style_fig(fig)
@@ -359,7 +366,7 @@ if page == "Overview":
     with col1:
         st.markdown('<div class="chart-card"><h4>📉 Tenure Distribution by Churn Status</h4>', unsafe_allow_html=True)
         fig = px.histogram(df, x='tenure', color='Churn', nbins=30, barmode='stack',
-                            color_discrete_map={'Yes': '#dc2626', 'No': '#22c55e'}, template='plotly_white', height=320,
+                            color_discrete_map={'Yes': '#dc2626', 'No': '#22c55e'}, template='plotly_dark', height=320,
                             labels={'tenure': 'Tenure (months)', 'count': 'Customers'}, category_orders={'Churn': ['No', 'Yes']})
         fig.update_layout(margin=dict(t=10, b=30, l=10, r=10), legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1))
         style_fig(fig)
@@ -373,8 +380,8 @@ if page == "Overview":
         payment_churn = payment_churn.sort_values('Churn Rate', ascending=False)
         fig = px.bar(payment_churn, x='Payment Method', y='Churn Rate', color='Churn Rate',
                      color_continuous_scale=['#22c55e', '#f59e0b', '#dc2626'],
-                     text=payment_churn['Churn Rate'].round(1), template='plotly_white', height=320)
-        fig.update_traces(textposition='outside', marker_line_width=0, textfont=dict(size=12, color='#1f2937'))
+                     text=payment_churn['Churn Rate'].round(1), template='plotly_dark', height=320)
+        fig.update_traces(textposition='outside', marker_line_width=0, textfont=dict(size=12, color='#f9fafb'))
         fig.update_layout(showlegend=False, margin=dict(t=10, b=40, l=10, r=10), xaxis_title="", yaxis_title="Churn Rate (%)",
                            yaxis=dict(range=[0, max(payment_churn['Churn Rate']) * 1.15]))
         style_fig(fig)
@@ -416,8 +423,8 @@ elif page == "Analysis":
         service_churn.columns = ['Service', 'Churn Rate']
         fig = px.bar(service_churn, x='Service', y='Churn Rate', color='Churn Rate',
                      color_continuous_scale=['#22c55e', '#f59e0b', '#dc2626'],
-                     text=service_churn['Churn Rate'].round(1), template='plotly_white', height=320)
-        fig.update_traces(textposition='outside', textfont=dict(size=13, color='#1f2937'))
+                     text=service_churn['Churn Rate'].round(1), template='plotly_dark', height=320)
+        fig.update_traces(textposition='outside', textfont=dict(size=13, color='#f9fafb'))
         fig.update_layout(showlegend=False, margin=dict(t=10, b=30))
         style_fig(fig)
         st.plotly_chart(fig, use_container_width=True)
@@ -430,8 +437,8 @@ elif page == "Analysis":
         payment_churn = payment_churn.sort_values('Churn Rate', ascending=False)
         fig = px.bar(payment_churn, x='Payment Method', y='Churn Rate', color='Churn Rate',
                      color_continuous_scale=['#22c55e', '#f59e0b', '#dc2626'],
-                     text=payment_churn['Churn Rate'].round(1), template='plotly_white', height=320)
-        fig.update_traces(textposition='outside', textfont=dict(size=12, color='#1f2937'))
+                     text=payment_churn['Churn Rate'].round(1), template='plotly_dark', height=320)
+        fig.update_traces(textposition='outside', textfont=dict(size=12, color='#f9fafb'))
         fig.update_layout(showlegend=False, margin=dict(t=10, b=40))
         style_fig(fig)
         st.plotly_chart(fig, use_container_width=True)
@@ -519,10 +526,10 @@ elif page == "Models":
     st.markdown('<div class="chart-card"><h4>📊 Model Performance Comparison</h4>', unsafe_allow_html=True)
     model_data = pd.DataFrame(models)
     fig = px.bar(model_data, x='name', y=['roc', 'pr'], barmode='group', text_auto='.3f',
-                 color_discrete_map={'roc': '#4f46e5', 'pr': '#7c3aed'}, template='plotly_white', height=350,
+                 color_discrete_map={'roc': '#4f46e5', 'pr': '#7c3aed'}, template='plotly_dark', height=350,
                  title="ROC-AUC vs PR-AUC Comparison")
     fig.update_layout(margin=dict(t=40, b=30), legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1), yaxis_title="Score", xaxis_title="")
-    fig.update_traces(textfont=dict(color='#1f2937', size=12))
+    fig.update_traces(textfont=dict(color='#f9fafb', size=12))
     style_fig(fig)
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -533,7 +540,7 @@ elif page == "Models":
         rf_importance = pd.read_csv("outputs/feature_importance_rf.csv", index_col=0)
         rf_importance = rf_importance.sort_values(by=rf_importance.columns[0], ascending=True).tail(15)
         fig = px.bar(rf_importance, x=rf_importance.columns[0], y=rf_importance.index, orientation='h',
-                     color=rf_importance.columns[0], color_continuous_scale='Blues', template='plotly_white', height=450,
+                     color=rf_importance.columns[0], color_continuous_scale='Blues', template='plotly_dark', height=450,
                      title="Random Forest Feature Importance")
         fig.update_layout(margin=dict(t=40, b=30, l=0, r=0), xaxis_title="Importance", yaxis_title="", showlegend=False)
         style_fig(fig)
