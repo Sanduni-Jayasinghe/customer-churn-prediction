@@ -19,8 +19,6 @@ st.set_page_config(
 
 # ============================================
 # SMALL REUSABLE SVG CHART ICON
-# (Fixes issue 3: a consistent vector icon instead of an emoji that
-#  renders differently — or oddly — across operating systems.)
 # ============================================
 CHART_ICON_SVG = """
 <svg viewBox="0 0 24 24" width="{size}" height="{size}" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -59,9 +57,9 @@ st.markdown("""
     .stRadio > div { gap: 0.2rem; }
     .stRadio label {
         display: flex !important; align-items: center !important; gap: 0.8rem !important;
-        padding: 0.65rem 1rem !important; margin: 0.15rem 0 !important; border-radius: 10px !important;
+        padding: 0.8rem 1.2rem !important; margin: 0.15rem 0 !important; border-radius: 10px !important;
         background: transparent !important; transition: all 0.25s ease !important; cursor: pointer !important;
-        border: none !important; color: #9ca3af !important; font-weight: 500 !important; font-size: 0.9rem !important;
+        border: none !important; color: #9ca3af !important; font-weight: 500 !important; font-size: 1.3rem !important; letter-spacing: 0.5px !important;
     }
     .stRadio label:hover { background: rgba(255,255,255,0.06) !important; color: #ffffff !important; }
     .stRadio label[data-checked="true"] {
@@ -140,16 +138,7 @@ st.markdown("""
     }
     .info-box strong { color: #1e40af !important; }
 
-    .kpi-table { background: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; }
-    .kpi-table th { background: #1a1a2e !important; color: #ffffff !important; padding: 0.8rem 1rem !important; font-weight: 600 !important; font-size: 0.85rem !important; }
-    .kpi-table td { padding: 0.7rem 1rem !important; color: #1f2937 !important; font-size: 0.85rem !important; border-bottom: 1px solid #f3f4f6 !important; }
-    .kpi-table tr:hover td { background: #f8fafc !important; }
-
-    /* ===== RISK CARDS =====
-       FIX (issue 2): the level label had no explicit color, so it silently
-       inherited Streamlit's theme text color. On a dark theme that text turns
-       pale, nearly invisible against these light card backgrounds. Every text
-       element below now has an explicit, guaranteed-dark color. */
+    /* ===== RISK CARDS ===== */
     .risk-card {
         padding: 0.7rem 1.2rem; border-radius: 10px; margin: 0.4rem 0; border-left: 4px solid;
         display: flex; justify-content: space-between; align-items: center; background: #fafafa;
@@ -207,18 +196,10 @@ st.markdown("""
 
 # ============================================
 # CHART TEXT/COLOR HELPER
-# FIX (issue 1): several charts used paper_bgcolor='rgba(0,0,0,0)'
-# (transparent). Transparent means the chart shows whatever the app's
-# background is behind it — on Streamlit's dark theme that's a dark color,
-# so dark-gray text (#1f2937) on top becomes unreadable. Forcing an explicit
-# WHITE paper background guarantees the dark text stays visible regardless
-# of which theme the app runs under.
 # ============================================
-CHART_FONT = dict(color='#e5e7eb', size=12)  # light gray-white, legible on the dark theme
+CHART_FONT = dict(color='#e5e7eb', size=12)
 
 def style_fig(fig, height=None):
-    # Transparent canvas blends with the app's dark background; plotly_dark
-    # template gives correctly-colored gridlines/axes for a dark canvas.
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)',
@@ -511,128 +492,4 @@ elif page == "Models":
     st.markdown('<div class="section-header">📊 <span class="highlight">Model Performance</span></div>', unsafe_allow_html=True)
     col1, col2, col3, col4 = st.columns(4)
     models = [
-        {"name": "Logistic Regression", "roc": 0.8414, "pr": 0.6306},
-        {"name": "Random Forest", "roc": 0.8411, "pr": 0.6538, "best": True},
-        {"name": "XGBoost", "roc": 0.8369, "pr": 0.6477},
-        {"name": "XGBoost (Tuned)", "roc": 0.8430, "pr": 0.6512}
-    ]
-    cols = [col1, col2, col3, col4]
-    for i, model_info in enumerate(models):
-        with cols[i]:
-            best_badge = '<div class="best-badge">🏆 Best</div>' if model_info.get('best') else ''
-            st.markdown(f"""<div class="model-card"><p class="model-name">{model_info['name']}</p><p class="model-score">{model_info['roc']:.4f}</p><p class="model-label">ROC-AUC</p><p style="font-size: 0.7rem; color: #6b7280; margin: 0.2rem 0;">PR-AUC: {model_info['pr']:.4f}</p>{best_badge}</div>""", unsafe_allow_html=True)
-
-    st.markdown("---")
-    st.markdown('<div class="chart-card"><h4>📊 Model Performance Comparison</h4>', unsafe_allow_html=True)
-    model_data = pd.DataFrame(models)
-    fig = px.bar(model_data, x='name', y=['roc', 'pr'], barmode='group', text_auto='.3f',
-                 color_discrete_map={'roc': '#4f46e5', 'pr': '#7c3aed'}, template='plotly_dark', height=350,
-                 title="ROC-AUC vs PR-AUC Comparison")
-    fig.update_layout(margin=dict(t=40, b=30), legend=dict(orientation='h', yanchor='bottom', y=1.02, xanchor='right', x=1), yaxis_title="Score", xaxis_title="")
-    fig.update_traces(textfont=dict(color='#f9fafb', size=12))
-    style_fig(fig)
-    st.plotly_chart(fig, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown("---")
-    st.markdown('<div class="section-header">🔑 <span class="highlight">Top Features Driving Churn</span></div>', unsafe_allow_html=True)
-    try:
-        rf_importance = pd.read_csv("outputs/feature_importance_rf.csv", index_col=0)
-        rf_importance = rf_importance.sort_values(by=rf_importance.columns[0], ascending=True).tail(15)
-        fig = px.bar(rf_importance, x=rf_importance.columns[0], y=rf_importance.index, orientation='h',
-                     color=rf_importance.columns[0], color_continuous_scale='Blues', template='plotly_dark', height=450,
-                     title="Random Forest Feature Importance")
-        fig.update_layout(margin=dict(t=40, b=30, l=0, r=0), xaxis_title="Importance", yaxis_title="", showlegend=False)
-        style_fig(fig)
-        st.plotly_chart(fig, use_container_width=True)
-    except Exception:
-        st.info("ℹ️ Feature importance data not available. Run the notebook first to generate this chart.")
-
-# ============================================
-# PAGE: INSIGHTS
-# ============================================
-elif page == "Insights":
-    st.markdown('<div class="section-header">💡 <span class="highlight">Business Insights & Recommendations</span></div>', unsafe_allow_html=True)
-    st.markdown("### 🔴 High-Risk Customer Segments")
-    risks = [
-        {"level": "Critical", "segment": "Month-to-month + Monthly charges > $70", "action": "Immediate retention offer", "class": "risk-critical"},
-        {"level": "High", "segment": "New customers (tenure < 6 months)", "action": "Welcome program", "class": "risk-high"},
-        {"level": "Medium", "segment": "Fiber optic internet customers", "action": "Bundle services", "class": "risk-medium"},
-        {"level": "Low", "segment": "Electronic check payment method", "action": "Auto-pay incentive", "class": "risk-low"}
-    ]
-    for risk in risks:
-        st.markdown(f"""<div class="risk-card {risk['class']}"><span class="risk-level">{risk['level']}</span><span class="risk-segment">{risk['segment']}</span><span class="risk-action">{risk['action']}</span></div>""", unsafe_allow_html=True)
-
-    st.markdown("---")
-    st.markdown("### ✅ Recommended Retention Strategies")
-    strategies = [
-        "💎 Offer annual contract discounts to month-to-month customers",
-        "🎯 Implement 'welcome' retention program for first 6 months",
-        "📦 Bundle high-speed internet with streaming services",
-        "💳 Incentivize electronic check customers to switch to auto-pay"
-    ]
-    for i, strategy in enumerate(strategies, 1):
-        st.markdown(f"""<div class="strategy-card"><div class="strategy-number">{i}</div><div class="strategy-text">{strategy}</div></div>""", unsafe_allow_html=True)
-
-    st.markdown("---")
-    st.markdown("### 📊 Key Metrics to Monitor")
-    kpi_data = pd.DataFrame({
-        'Metric': ["📊 Monthly churn rate by contract type", "🎯 Churn rate at tenure milestones", "⭐ Customer satisfaction scores (high-risk)", "📈 Retention campaign conversion rate"],
-        'Target': ["< 15% for month-to-month", "< 20% at 3 months", "> 4.0/5.0", "> 25%"],
-        'Status': ["🟢 On Track", "🟡 Monitor", "🟢 On Track", "🟡 Monitor"]
-    })
-    st.dataframe(
-        kpi_data.style
-            .set_properties(**{'background-color': '#f8fafc', 'color': '#1f2937', 'border-color': '#e5e7eb', 'padding': '10px'})
-            .set_table_styles([
-                {'selector': 'thead th', 'props': [('background', '#1a1a2e'), ('color', 'white'), ('font-weight', '600'), ('padding', '10px')]},
-                {'selector': 'tbody tr:hover', 'props': [('background', '#eef2ff')]}
-            ])
-            .set_properties(subset=['Status'], **{'font-weight': '600'}),
-        use_container_width=True, hide_index=True
-    )
-
-    st.markdown("---")
-    st.markdown("### 📥 Download Report")
-    report_text = """
-    BUSINESS RECOMMENDATIONS REPORT
-    ================================
-
-    HIGHEST RISK CUSTOMER SEGMENTS:
-    1. Month-to-month contracts with high monthly charges (>$70)
-    2. New customers (tenure < 6 months)
-    3. Fiber optic internet customers
-    4. Electronic check payment method
-
-    RECOMMENDED RETENTION STRATEGIES:
-    1. Offer annual contract discounts to month-to-month customers
-    2. Implement 'welcome' retention program for first 6 months
-    3. Bundle high-speed internet with streaming services
-    4. Incentivize electronic check customers to switch to auto-pay
-
-    KEY METRICS TO MONITOR:
-    - Monthly churn rate by contract type
-    - Churn rate at tenure milestones
-    - Customer satisfaction scores for high-risk segments
-    - Retention campaign conversion rate
-
-    MODEL PERFORMANCE:
-    - Best Model: Random Forest (ROC-AUC: 0.841)
-    - Precision (Churn): 0.53
-    - Recall (Churn): 0.77
-    - F1-Score (Churn): 0.63
-    """
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.download_button(label="📥 Download Report (TXT)", data=report_text, file_name="business_recommendations.txt", mime="text/plain", use_container_width=True)
-
-# ============================================
-# FOOTER
-# ============================================
-st.markdown("""
-<div class="footer">
-    <p><strong>Customer Churn Prediction Dashboard</strong> • Built with Streamlit & Python</p>
-    <p>Data Source: IBM Telco Customer Churn Dataset • 7,043 Customers</p>
-    <p style="margin-top: 0.3rem; opacity: 0.6;">© 2024 Churn Analytics • All Rights Reserved</p>
-</div>
-""", unsafe_allow_html=True)
+        {"name": "Logistic Regression", "roc": 0.8414, "pr": 0.630
