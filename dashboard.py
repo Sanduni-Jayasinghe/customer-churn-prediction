@@ -622,8 +622,6 @@ elif page == "Insights":
     </div>
     """, unsafe_allow_html=True)
 
-    st.caption("📌 Hover over a row to highlight it")
-
     # Export KPI Data
     st.markdown("---")
     st.markdown("### 📥 Export KPI Data")
