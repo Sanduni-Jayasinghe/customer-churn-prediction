@@ -516,17 +516,29 @@ elif page == "Models":
     col1, col2, col3, col4 = st.columns(4)
     # Corrected, leak-free metrics from the train/validation/test split
     # (threshold selected on validation, evaluated once on the held-out test set)
+    #
+    # NOTE ON "BEST": Logistic Regression scores marginally higher on
+    # ROC-AUC/PR-AUC in the comparison table, but it is never saved to disk
+    # anywhere in the notebook (no joblib.dump for it) and cannot be loaded
+    # by load_model() below. The "Predict Churn Risk" page actually runs
+    # outputs/best_xgb_model.pkl, i.e. XGBoost (Tuned). To avoid the
+    # dashboard claiming one model is best while a different one produces
+    # every live prediction, the badge here is tied to the model that is
+    # actually deployed, not just the model with the top offline metric.
+    # (If you'd rather deploy Logistic Regression, retrain it in the
+    # notebook, joblib.dump it, and point load_model() at that file instead.)
     models = [
-        {"name": "Logistic Regression", "roc": 0.8389, "pr": 0.6552, "best": True},
+        {"name": "Logistic Regression", "roc": 0.8389, "pr": 0.6552},
         {"name": "Random Forest", "roc": 0.8289, "pr": 0.6318},
         {"name": "XGBoost", "roc": 0.8175, "pr": 0.6143},
-        {"name": "XGBoost (Tuned)", "roc": 0.8339, "pr": 0.6357}
+        {"name": "XGBoost (Tuned)", "roc": 0.8339, "pr": 0.6357, "deployed": True},
     ]
     cols = [col1, col2, col3, col4]
     for i, model_info in enumerate(models):
         with cols[i]:
-            best_badge = '<div class="best-badge">🏆 Best</div>' if model_info.get('best') else ''
+            best_badge = '<div class="best-badge">🏆 Deployed</div>' if model_info.get('deployed') else ''
             st.markdown(f"""<div class="model-card"><p class="model-name">{model_info['name']}</p><p class="model-score">{model_info['roc']:.4f}</p><p class="model-label">ROC-AUC</p><p style="font-size: 0.7rem; color: #6b7280; margin: 0.2rem 0;">PR-AUC: {model_info['pr']:.4f}</p>{best_badge}</div>""", unsafe_allow_html=True)
+    st.caption("Logistic Regression edges out the others on ROC-AUC/PR-AUC, but XGBoost (Tuned) is the model actually saved and served by this dashboard's predictions below.")
 
     st.markdown("---")
     st.markdown('<div class="chart-card"><h4>📊 Model Performance Comparison</h4>', unsafe_allow_html=True)
@@ -664,11 +676,15 @@ KEY METRICS TO MONITOR:
 - Retention campaign conversion rate
 
 MODEL PERFORMANCE (train/validation/test split, no leakage):
-- Best Model: Logistic Regression (ROC-AUC: 0.839, PR-AUC: 0.655)
-- XGBoost (Tuned): ROC-AUC 0.834, PR-AUC 0.636, F1 0.616
+- Logistic Regression:  ROC-AUC 0.839, PR-AUC 0.655 (top ROC-AUC/PR-AUC, not deployed)
+- Random Forest:        ROC-AUC 0.829, PR-AUC 0.632
+- XGBoost:               ROC-AUC 0.818, PR-AUC 0.614
+- XGBoost (Tuned):      ROC-AUC 0.834, PR-AUC 0.636  <-- DEPLOYED MODEL
+
+DEPLOYED MODEL (XGBoost, Tuned) — Churn class, optimal threshold from validation:
 - Precision (Churn): 0.54
-- Recall (Churn): 0.77
-- F1-Score (Churn): 0.63
+- Recall (Churn):    0.72
+- F1-Score (Churn):  0.62
 """
 
     col1, col2, col3 = st.columns([1, 2, 1])
