@@ -280,13 +280,15 @@ def build_feature_row(tenure, monthly, total, contract, internet, payment,
     if 'SeniorCitizen' in row.index:
         row['SeniorCitizen'] = 1 if senior == "Yes" else 0
 
-    for c in ['Contract_One year', 'Contract_Two year']:
+    for c in ['Contract_One year', 'Contract_Two year', 'Contract_Month-to-month']:
         if c in row.index:
             row[c] = 0
     if contract in ("One year", "Two year"):
         col = f'Contract_{contract}'
         if col in row.index:
             row[col] = 1
+    elif contract == "Month-to-month" and 'Contract_Month-to-month' in row.index:
+        row['Contract_Month-to-month'] = 1
 
     for c in ['InternetService_Fiber optic', 'InternetService_No']:
         if c in row.index:
