@@ -7,9 +7,9 @@ import joblib
 import warnings
 warnings.filterwarnings('ignore')
 
-# ============================================
+# ===============================================
 # PAGE CONFIGURATION
-# ============================================
+# ===============================================
 st.set_page_config(
     page_title="Customer Churn Dashboard",
     page_icon="📊",
