@@ -259,9 +259,9 @@ def check_required_files():
 @st.cache_resource
 def load_model():
     try:
-        return joblib.load("outputs/best_xgb_model.pkl")
-    except Exception:
-        return None
+        return joblib.load("outputs/best_xgb_model.pkl"), None
+    except Exception as e:
+        return None, f"{type(e).__name__}: {e}"
 
 @st.cache_resource
 def load_feature_schema():
@@ -272,9 +272,9 @@ def load_feature_schema():
     try:
         columns = joblib.load("outputs/model_features.pkl")
         defaults = joblib.load("outputs/model_feature_defaults.pkl")
-        return columns, defaults
-    except Exception:
-        return None, None
+        return columns, defaults, None
+    except Exception as e:
+        return None, None, f"{type(e).__name__}: {e}"
 
 def build_feature_row(tenure, monthly, total, contract, internet, payment,
                        gender, senior, columns, defaults, monthly_median):
@@ -341,8 +341,8 @@ def build_feature_row(tenure, monthly, total, contract, internet, payment,
     return pd.DataFrame([row])[columns]
 
 df = load_data()
-model = load_model()
-feature_columns, feature_defaults = load_feature_schema()
+model, model_load_error = load_model()
+feature_columns, feature_defaults, schema_load_error = load_feature_schema()
 
 # ============================================
 # SIDEBAR
@@ -588,13 +588,13 @@ elif page == "Predictor":
                     )
                 else:
                     st.info(
-                        "All three files exist but failed to load — this "
-                        "usually means a scikit-learn/XGBoost/joblib "
-                        "version mismatch between the environment that "
-                        "trained the model and the one running this "
-                        "dashboard. Re-run the notebook in this same "
-                        "environment to regenerate them."
+                        "All three files exist but failed to load. "
+                        "Actual error(s) below:"
                     )
+                    if model_load_error:
+                        st.code(f"best_xgb_model.pkl:\n{model_load_error}")
+                    if schema_load_error:
+                        st.code(f"model_features.pkl / model_feature_defaults.pkl:\n{schema_load_error}")
                 st.stop()
 
             X_input = build_feature_row(
