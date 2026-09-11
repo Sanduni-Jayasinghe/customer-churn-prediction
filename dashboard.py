@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -241,6 +242,19 @@ def load_data():
     df = pd.read_csv("data/telco_churn.csv")
     df['Churn_Flag'] = (df['Churn'] == 'Yes').astype(int)
     return df
+
+def check_required_files():
+    """Checks for the three files the Predictor page needs and returns a
+    list of (path, exists) tuples plus the working directory Streamlit is
+    actually running from. Used to build a precise, actionable error
+    message instead of a generic 'not found'."""
+    required = [
+        "outputs/best_xgb_model.pkl",
+        "outputs/model_features.pkl",
+        "outputs/model_feature_defaults.pkl",
+    ]
+    status = [(f, os.path.exists(f)) for f in required]
+    return status, os.getcwd()
 
 @st.cache_resource
 def load_model():
@@ -556,12 +570,31 @@ elif page == "Predictor":
     with col2:
         if st.button("🔮 Predict Churn Risk", use_container_width=True, key='predict_btn'):
             if model is None or feature_columns is None:
-                st.error(
-                    "⚠️ Model or feature schema not found. Run the notebook "
-                    "first so it generates outputs/best_xgb_model.pkl, "
-                    "outputs/model_features.pkl, and "
-                    "outputs/model_feature_defaults.pkl."
-                )
+                status, cwd = check_required_files()
+                missing = [f for f, exists in status if not exists]
+                st.error("⚠️ Model or feature schema not found.")
+                st.markdown(f"**Streamlit is running from:** `{cwd}`")
+                for f, exists in status:
+                    st.markdown(f"- {'✅' if exists else '❌'} `{f}`")
+                if missing:
+                    st.info(
+                        "The files marked ❌ above don't exist at that path. "
+                        "Either run the notebook's save cells (the XGBoost "
+                        "GridSearchCV cell and the 'SAVE FEATURE SCHEMA' "
+                        "cell) from top to bottom so they get created, or, "
+                        "if the ✅/❌ files above look wrong, launch "
+                        "Streamlit from the same folder that contains your "
+                        "`outputs/` directory."
+                    )
+                else:
+                    st.info(
+                        "All three files exist but failed to load — this "
+                        "usually means a scikit-learn/XGBoost/joblib "
+                        "version mismatch between the environment that "
+                        "trained the model and the one running this "
+                        "dashboard. Re-run the notebook in this same "
+                        "environment to regenerate them."
+                    )
                 st.stop()
 
             X_input = build_feature_row(
