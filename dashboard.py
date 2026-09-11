@@ -4,7 +4,6 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 import joblib
-import os
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -247,9 +246,7 @@ def load_data():
 def load_model():
     try:
         return joblib.load("outputs/best_xgb_model.pkl")
-    except Exception as e:
-        st.warning(f"DEBUG load_model failed: {e}")
-        st.warning(f"DEBUG cwd={os.getcwd()} exists={os.path.exists('outputs/best_xgb_model.pkl')}")
+    except Exception:
         return None
 
 @st.cache_resource
@@ -262,9 +259,7 @@ def load_feature_schema():
         columns = joblib.load("outputs/model_features.pkl")
         defaults = joblib.load("outputs/model_feature_defaults.pkl")
         return columns, defaults
-    except Exception as e:
-        st.warning(f"DEBUG load_feature_schema failed: {e}")
-        st.warning(f"DEBUG files present: {os.listdir('outputs') if os.path.exists('outputs') else 'no outputs dir'}")
+    except Exception:
         return None, None
 
 def build_feature_row(tenure, monthly, total, contract, internet, payment,
