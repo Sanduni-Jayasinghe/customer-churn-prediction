@@ -823,9 +823,9 @@ DEPLOYED MODEL (XGBoost, Tuned) — Churn class, optimal threshold from validati
             use_container_width=True
         )
 
-# ============================================
+# ================================================
 # FOOTER
-# ============================================
+# ================================================
 st.markdown("""
 <div class="footer">
     <p><strong>Customer Churn Prediction Dashboard</strong> • Built with Streamlit & Python</p>
