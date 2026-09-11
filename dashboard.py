@@ -249,8 +249,84 @@ def load_model():
     except Exception:
         return None
 
+@st.cache_resource
+def load_feature_schema():
+    """Loads the exact column list + median/mode defaults the model was
+    trained on (saved by the notebook). Needed because the Predictor form
+    only collects a handful of fields, but the model expects every
+    engineered column in the same order they were trained on."""
+    try:
+        columns = joblib.load("outputs/model_features.pkl")
+        defaults = joblib.load("outputs/model_feature_defaults.pkl")
+        return columns, defaults
+    except Exception:
+        return None, None
+
+def build_feature_row(tenure, monthly, total, contract, internet, payment,
+                       gender, senior, columns, defaults, monthly_median):
+    """Builds a single-row DataFrame matching the model's training schema.
+    Fields the Predictor form collects are set explicitly; everything else
+    (Partner, Dependents, OnlineSecurity, NumServices, etc.) falls back to
+    the training-set median/mode default, since the form doesn't ask about
+    them."""
+    row = pd.Series(defaults, index=columns).fillna(0)
+
+    row['tenure'] = tenure
+    row['MonthlyCharges'] = monthly
+    row['TotalCharges'] = total
+    row['AvgMonthlyCharges'] = total / (tenure + 1)
+    if 'gender' in row.index:
+        row['gender'] = 1 if gender == "Male" else 0
+    if 'SeniorCitizen' in row.index:
+        row['SeniorCitizen'] = 1 if senior == "Yes" else 0
+
+    for c in ['Contract_One year', 'Contract_Two year']:
+        if c in row.index:
+            row[c] = 0
+    if contract in ("One year", "Two year"):
+        col = f'Contract_{contract}'
+        if col in row.index:
+            row[col] = 1
+
+    for c in ['InternetService_Fiber optic', 'InternetService_No']:
+        if c in row.index:
+            row[c] = 0
+    if internet in ("Fiber optic", "No"):
+        col = f'InternetService_{internet}'
+        if col in row.index:
+            row[col] = 1
+
+    payment_map = {
+        "Electronic check": "PaymentMethod_Electronic check",
+        "Mailed check": "PaymentMethod_Mailed check",
+        "Bank transfer": "PaymentMethod_Bank transfer (automatic)",
+        "Credit card": "PaymentMethod_Credit card (automatic)",
+    }
+    for c in payment_map.values():
+        if c in row.index:
+            row[c] = 0
+    target_col = payment_map.get(payment)
+    if target_col in row.index:
+        row[target_col] = 1
+
+    tenure_group_cols = [c for c in row.index if c.startswith('TenureGroup_')]
+    for c in tenure_group_cols:
+        row[c] = 0
+    bins = [0, 1, 6, 12, 24, 60, 100]
+    labels = ['0-1 months', '2-6 months', '7-12 months', '1-2 years', '2-5 years', '5+ years']
+    group = pd.cut([tenure], bins=bins, labels=labels, right=False)[0]
+    group_col = f'TenureGroup_{group}'
+    if group_col in row.index:
+        row[group_col] = 1
+
+    if 'HighCost_Monthly' in row.index:
+        row['HighCost_Monthly'] = int(monthly > monthly_median and contract == "Month-to-month")
+
+    return pd.DataFrame([row])[columns]
+
 df = load_data()
 model = load_model()
+feature_columns, feature_defaults = load_feature_schema()
 
 # ============================================
 # SIDEBAR
@@ -467,6 +543,8 @@ elif page == "Predictor":
         st.markdown('<div class="predictor-section"><h4>📋 Service Details</h4>', unsafe_allow_html=True)
         internet = st.selectbox("Internet Service", ["DSL", "Fiber optic", "No"], key='pred_internet')
         payment = st.selectbox("Payment Method", ["Electronic check", "Mailed check", "Bank transfer", "Credit card"], key='pred_payment')
+        # Note: displayed as "Bank transfer" / "Credit card" for brevity, but
+        # mapped to the training data's exact "... (automatic)" labels below.
         gender = st.selectbox("Gender", ["Male", "Female"], key='pred_gender')
         senior = st.selectbox("Senior Citizen", ["No", "Yes"], key='pred_senior')
         st.markdown('</div>', unsafe_allow_html=True)
@@ -475,8 +553,21 @@ elif page == "Predictor":
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         if st.button("🔮 Predict Churn Risk", use_container_width=True, key='predict_btn'):
-            import random
-            prob = random.uniform(0.1, 0.95)
+            if model is None or feature_columns is None:
+                st.error(
+                    "⚠️ Model or feature schema not found. Run the notebook "
+                    "first so it generates outputs/best_xgb_model.pkl, "
+                    "outputs/model_features.pkl, and "
+                    "outputs/model_feature_defaults.pkl."
+                )
+                st.stop()
+
+            X_input = build_feature_row(
+                tenure, monthly, total, contract, internet, payment,
+                gender, senior, feature_columns, feature_defaults,
+                monthly_median=df['MonthlyCharges'].median(),
+            )
+            prob = model.predict_proba(X_input)[:, 1][0]
             st.markdown("---")
             col1, col2 = st.columns(2)
             with col1:
